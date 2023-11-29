@@ -16,4 +16,22 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
-data class SettingsUiState(val isAnonymousAccount: Boolean = true)
+import android.net.Uri
+
+data class SettingsUiState(
+    val isAnonymousAccount: Boolean = true,
+    val username: String = "",
+    val email: String = "",
+    val picUrl: Uri? = null,
+    val providerInfo: String = ""
+)
+
+data class EditUiState(
+    val isEditable: Boolean = false,
+    val username: String = "",
+    val email: String = "",
+    val picUrl: String = "",
+    val usernameInitCheck: Boolean = true,
+    val emailInitCheck: Boolean = true,
+    val picUrlInitCheck: Boolean = true
+)

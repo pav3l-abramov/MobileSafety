@@ -16,6 +16,7 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +24,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.makeitso.R.drawable as AppIcon
@@ -42,6 +44,7 @@ fun SettingsScreen(
   val uiState by viewModel.uiState.collectAsState(
     initial = SettingsUiState(false)
   )
+
 
   Column(
     modifier = modifier.fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()),
@@ -65,6 +68,66 @@ fun SettingsScreen(
     }
   }
 }
+
+@ExperimentalMaterialApi
+@Composable
+private fun ConfirmEditCard(backToSettings: () -> Unit) {
+  var showWarningDialog by remember { mutableStateOf(false) }
+
+  RegularCardEditor(AppText.confirm_changes, AppIcon.ic_check, "", Modifier.card()) {
+    showWarningDialog = true
+  }
+
+  if (showWarningDialog) {
+    AlertDialog(
+      title = { Text("Do you confirm changes?") },
+      text = { Text("You will return to profile overview") },
+      dismissButton = { DialogCancelButton(AppText.cancel) { showWarningDialog = false } },
+      confirmButton = {
+        DialogConfirmButton(AppText.stop_changes) {
+          backToSettings()
+          showWarningDialog = false
+        }
+      },
+      onDismissRequest = { showWarningDialog = false }
+    )
+  }
+}
+
+
+@ExperimentalMaterialApi
+@Composable
+private fun CancelCard(backToSettings: () -> Unit, resetUsername: () -> Unit, resetEmail: () -> Unit, resetPicUri: () -> Unit) {
+  var showWarningDialog by remember { mutableStateOf(false) }
+
+  RegularCardEditor(AppText.return_to_profile, AppIcon.ic_exit, "", Modifier.card()) {
+    showWarningDialog = true
+  }
+
+  if (showWarningDialog) {
+    AlertDialog(
+      title = { Text("Stop doing changes?") },
+      text = { Text("You will return to profile overview") },
+      dismissButton = { DialogCancelButton(AppText.cancel) { showWarningDialog = false } },
+      confirmButton = {
+        DialogConfirmButton(AppText.stop_changes) {
+          backToSettings()
+          resetUsername()
+          resetEmail()
+          resetPicUri()
+          showWarningDialog = false
+        }
+      },
+      onDismissRequest = { showWarningDialog = false }
+    )
+  }
+}
+
+@Composable
+private fun toolbarColor(darkTheme: Boolean = isSystemInDarkTheme()): Color {
+  return if (darkTheme) MaterialTheme.colors.secondary else MaterialTheme.colors.primaryVariant
+}
+
 
 @ExperimentalMaterialApi
 @Composable

@@ -16,15 +16,18 @@ limitations under the License.
 
 package com.example.makeitso.screens.login
 
+import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
 import com.example.makeitso.R.string as AppText
 import com.example.makeitso.SETTINGS_SCREEN
+import com.example.makeitso.SPLASH_SCREEN
 import com.example.makeitso.common.ext.isValidEmail
 import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.screens.MakeItSoViewModel
+import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -49,7 +52,7 @@ class LoginViewModel @Inject constructor(
     uiState.value = uiState.value.copy(password = newValue)
   }
 
-  fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
+  fun onSignInClick(restartApp: (String) -> Unit) {
     if (!email.isValidEmail()) {
       SnackbarManager.showMessage(AppText.email_error)
       return
@@ -62,7 +65,7 @@ class LoginViewModel @Inject constructor(
 
     launchCatching {
       accountService.authenticate(email, password)
-      openAndPopUp(SETTINGS_SCREEN, LOGIN_SCREEN)
+      restartApp(SPLASH_SCREEN)
     }
   }
 
@@ -77,4 +80,11 @@ class LoginViewModel @Inject constructor(
       SnackbarManager.showMessage(AppText.recovery_email_sent)
     }
   }
+  fun googleSignIn(intent: Intent, oneTapClient: SignInClient, restartApp: (String) -> Unit){
+    launchCatching {
+      val result = accountService.signInGoogle(intent, oneTapClient)
+      if(result) restartApp(SPLASH_SCREEN)
+    }
+  }
+
 }

@@ -16,7 +16,10 @@ limitations under the License.
 
 package com.example.makeitso.model.service
 
+import android.content.Intent
 import com.example.makeitso.model.User
+import com.example.makeitso.screens.settings.EditUiState
+import com.google.android.gms.auth.api.identity.SignInClient
 import kotlinx.coroutines.flow.Flow
 
 interface AccountService {
@@ -31,4 +34,8 @@ interface AccountService {
   suspend fun linkAccount(email: String, password: String)
   suspend fun deleteAccount()
   suspend fun signOut()
+
+  suspend fun signInGoogle(intent: Intent, oneTapClient: SignInClient):Boolean
+  suspend fun changeProfile(newInfo: EditUiState)
+  fun getUserInfo(): EditUiState
 }

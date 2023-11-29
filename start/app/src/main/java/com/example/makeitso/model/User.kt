@@ -16,7 +16,14 @@ limitations under the License.
 
 package com.example.makeitso.model
 
+import android.net.Uri
+
 data class User(
     val id: String = "",
-    val isAnonymous: Boolean = true
+    val isAnonymous: Boolean = true,
+
+    val username: String ="",
+    val email: String = "",
+    val picUrl: Uri? = null,
+    val providerInfo: String =""
 )
