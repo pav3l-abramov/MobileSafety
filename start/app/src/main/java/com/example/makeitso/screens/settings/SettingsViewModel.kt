@@ -16,9 +16,14 @@ limitations under the License.
 
 package com.example.makeitso.screens.settings
 
+import androidx.compose.runtime.mutableStateOf
 import com.example.makeitso.LOGIN_SCREEN
+import com.example.makeitso.R
+import com.example.makeitso.SETTINGS_SCREEN
 import com.example.makeitso.SIGN_UP_SCREEN
 import com.example.makeitso.SPLASH_SCREEN
+import com.example.makeitso.common.ext.isValidEmail
+import com.example.makeitso.common.snackbar.SnackbarManager
 import com.example.makeitso.model.service.AccountService
 import com.example.makeitso.model.service.LogService
 import com.example.makeitso.model.service.StorageService
@@ -33,8 +38,47 @@ class SettingsViewModel @Inject constructor(
   private val accountService: AccountService,
   private val storageService: StorageService
 ) : MakeItSoViewModel(logService) {
-  val uiState = accountService.currentUser.map {
-    SettingsUiState(it.isAnonymous)
+  val uiState = accountService.currentUser.map{
+    SettingsUiState(
+      it.isAnonymous,
+      it.username,
+      it.email,
+      it.picUrl,
+      it.providerInfo
+    )
+  }
+
+  var editUiState = mutableStateOf(accountService.getUserInfo())
+    private set
+
+  private val email
+    get() = editUiState.value.email
+
+  private val username
+    get() = editUiState.value.username
+
+  private val picUri
+    get() = editUiState.value.picUrl
+
+  fun onEditChange(newValue: Boolean) {
+    editUiState.value = editUiState.value.copy(isEditable = newValue)
+  }
+
+  fun onEmailChange(newValue: String) {
+    editUiState.value = editUiState.value.copy(email = newValue)
+  }
+
+  fun onUsernameChange(newValue: String) {
+    editUiState.value = editUiState.value.copy(username = newValue)
+  }
+
+  fun onPicUriChange(newValue: String) {
+    editUiState.value = editUiState.value.copy(picUrl = newValue)
+  }
+
+  fun onCancelClick(openScreen: (String) -> Unit) {
+    editUiState.value = editUiState.value.copy(isEditable = false)
+    openScreen(SETTINGS_SCREEN)
   }
 
 
@@ -46,6 +90,19 @@ class SettingsViewModel @Inject constructor(
     launchCatching {
       accountService.signOut()
       restartApp(SPLASH_SCREEN)
+    }
+  }
+  fun confirmChanges(openScreen: (String, String) -> Unit) {
+    if (!email.isValidEmail()) {
+      SnackbarManager.showMessage(R.string.email_error)
+      return
+    }
+
+    launchCatching {
+      accountService.changeProfile(EditUiState(username = username, email = email, picUrl = picUri))
+      editUiState.value = editUiState.value.copy(isEditable = false)
+      accountService.getUserInfo()
+      openScreen(SETTINGS_SCREEN,SETTINGS_SCREEN)
     }
   }
 

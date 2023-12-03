@@ -47,7 +47,14 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     get() = callbackFlow {
       val listener =
         FirebaseAuth.AuthStateListener { auth ->
-          this.trySend(auth.currentUser?.let { User(it.uid, it.isAnonymous) } ?: User())
+          this.trySend(auth.currentUser?.let {
+            if (it.isAnonymous) User(it.uid, it.isAnonymous)
+            else User(id = it.uid,
+              isAnonymous = it.isAnonymous,
+              username = it.displayName ?: "",
+              email = it.email ?: "",
+              picUrl = it.photoUrl,
+              providerInfo = it.providerData[1].providerId)} ?: User())
         }
       auth.addAuthStateListener(listener)
       awaitClose { auth.removeAuthStateListener(listener) }

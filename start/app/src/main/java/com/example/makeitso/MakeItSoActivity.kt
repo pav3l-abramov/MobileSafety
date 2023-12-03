@@ -134,7 +134,8 @@ class MakeItSoActivity : AppCompatActivity() {
     composable(SETTINGS_SCREEN) {
       SettingsScreen(
         restartApp = { route -> appState.clearAndNavigate(route) },
-        openScreen = { route -> appState.navigate(route) }
+        openScreen = { route -> appState.navigate(route) },
+        openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)}
       )
     }
 
