@@ -16,6 +16,7 @@
 
 package com.example.inventory.ui.item
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -61,13 +62,14 @@ fun ItemEntryScreen(
     canNavigateBack: Boolean = true,
     viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-
     val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             InventoryTopAppBar(
                 title = stringResource(ItemEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
+                canShare = false,
                 navigateUp = onNavigateUp
             )
         }
@@ -99,7 +101,7 @@ fun ItemEntryBody(
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large)),
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        ) {
+    ) {
         ItemInputForm(
             itemDetails = itemUiState.itemDetails,
             onValueChange = onItemValueChange,
@@ -122,7 +124,8 @@ fun ItemInputForm(
     itemDetails: ItemDetails,
     modifier: Modifier = Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
         modifier = modifier,
@@ -139,7 +142,8 @@ fun ItemInputForm(
             ),
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = itemDetails.name.isEmpty()
         )
         OutlinedTextField(
             value = itemDetails.price,
@@ -154,7 +158,8 @@ fun ItemInputForm(
             leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = itemDetails.price.isEmpty()
         )
         OutlinedTextField(
             value = itemDetails.quantity,
@@ -168,7 +173,50 @@ fun ItemInputForm(
             ),
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = itemDetails.quantity.isEmpty()
+        )
+        OutlinedTextField(
+            value = itemDetails.supplierName,
+            onValueChange = { onValueChange(itemDetails.copy(supplierName = it)) },
+            label = { Text(stringResource(R.string.supplier_name_req)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            isError = itemDetails.supplierName.isEmpty()
+        )
+        OutlinedTextField(
+            value = itemDetails.supplierEmail,
+            onValueChange = { onValueChange(itemDetails.copy(supplierEmail = it)) },
+            label = { Text(stringResource(R.string.supplier_email)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            isError = !(itemDetails.supplierEmail.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(itemDetails.supplierEmail).matches())
+        )
+        OutlinedTextField(
+            value = itemDetails.supplierPhone,
+            onValueChange = { onValueChange(itemDetails.copy(supplierPhone = it)) },
+            label = { Text(stringResource(R.string.supplier_phone)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches() && itemDetails.supplierPhone.startsWith("+7") && itemDetails.supplierPhone.length == 12))
         )
         if (enabled) {
             Text(

@@ -47,12 +47,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.inventory.Events
 import com.example.inventory.InventoryTopAppBar
+import com.example.inventory.MainActivity
+import com.example.inventory.MyFragmentNavigation
 import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.AppViewModelProvider
@@ -77,12 +81,26 @@ fun ItemDetailsScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val activity = LocalContext.current as MainActivity
+    var textToShare = ""
+    val navigationEventsObserver = Events.EventObserver { event ->
+        when (event) {
+            is MyFragmentNavigation.ShareProduct -> {
+                textToShare = event.productInfo
+                activity.share(textToShare)
+            }
+        }
+    }
+    viewModel.emitter.observe(activity, navigationEventsObserver)
+
     Scaffold(
         topBar = {
             InventoryTopAppBar(
                 title = stringResource(ItemDetailsDestination.titleRes),
                 canNavigateBack = true,
-                navigateUp = navigateBack
+                canShare = true,
+                navigateUp = navigateBack,
+                viewModel = viewModel
             )
         }, floatingActionButton = {
             FloatingActionButton(
@@ -194,6 +212,27 @@ fun ItemDetails(
             ItemDetailsRow(
                 labelResID = R.string.price,
                 itemDetail = item.formatedPrice(),
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                )
+            )
+            ItemDetailsRow(
+                labelResID = R.string.supplier_name_req,
+                itemDetail = item.supplierName,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                )
+            )
+            ItemDetailsRow(
+                labelResID = R.string.supplier_email,
+                itemDetail = item.supplierEmail,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                )
+            )
+            ItemDetailsRow(
+                labelResID = R.string.supplier_phone,
+                itemDetail = item.supplierPhone,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )

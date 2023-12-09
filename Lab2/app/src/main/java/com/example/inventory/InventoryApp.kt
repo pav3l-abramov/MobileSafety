@@ -21,6 +21,7 @@ package com.example.inventory
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,10 +30,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R.string
+import com.example.inventory.ui.item.ItemDetailsViewModel
 import com.example.inventory.ui.navigation.InventoryNavHost
 
 /**
@@ -47,14 +50,18 @@ fun InventoryApp(navController: NavHostController = rememberNavController()) {
 /**
  * App bar to display title and conditionally display the back navigation.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryTopAppBar(
     title: String,
     canNavigateBack: Boolean,
+    canShare: Boolean,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    navigateUp: () -> Unit = {}
+    navigateUp: () -> Unit = {},
+    viewModel: ItemDetailsViewModel? = null,
 ) {
+    val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = { Text(title) },
         modifier = modifier,
@@ -64,6 +71,16 @@ fun InventoryTopAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Filled.ArrowBack,
+                        contentDescription = stringResource(string.back_button)
+                    )
+                }
+            }
+        },        actions = {
+            if (canShare) {
+                IconButton(onClick = { viewModel!!.shareItem(context) },
+                    modifier = Modifier) {
+                    Icon(
+                        imageVector = Filled.Share,
                         contentDescription = stringResource(string.back_button)
                     )
                 }

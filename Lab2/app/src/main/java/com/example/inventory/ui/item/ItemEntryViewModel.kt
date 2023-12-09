@@ -16,6 +16,7 @@
 
 package com.example.inventory.ui.item
 
+import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -41,16 +42,30 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      */
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails))
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank() && supplierName.isNotBlank()
         }
     }
+
+    private fun validateEmail(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            supplierEmail.isBlank() || Patterns.EMAIL_ADDRESS.matcher(supplierEmail).matches()
+        }
+    }
+
+    private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            supplierPhone.isBlank() || (Patterns.PHONE.matcher(supplierPhone).matches()
+                    && supplierPhone.startsWith("+7") && supplierPhone.length == 12)
+        }
+    }
+
     suspend fun saveItem() {
-        if (validateInput()) {
+        if (validateInput() && validateEmail() && validatePhone()) {
             itemsRepository.insertItem(itemUiState.itemDetails.toItem())
         }
     }
@@ -69,6 +84,9 @@ data class ItemDetails(
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
+    val supplierName: String = "",
+    val supplierEmail: String = "",
+    val supplierPhone: String = ""
 )
 
 /**
@@ -80,7 +98,10 @@ fun ItemDetails.toItem(): Item = Item(
     id = id,
     name = name,
     price = price.toDoubleOrNull() ?: 0.0,
-    quantity = quantity.toIntOrNull() ?: 0
+    quantity = quantity.toIntOrNull() ?: 0,
+    supplierName = supplierName,
+    supplierEmail = supplierEmail,
+    supplierPhone = supplierPhone
 )
 
 fun Item.formatedPrice(): String {
@@ -102,7 +123,10 @@ fun Item.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     name = name,
     price = price.toString(),
-    quantity = quantity.toString()
+    quantity = quantity.toString(),
+    supplierName = supplierName,
+    supplierEmail = supplierEmail,
+    supplierPhone = supplierPhone
 )
 
 

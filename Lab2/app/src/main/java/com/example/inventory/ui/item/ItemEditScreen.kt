@@ -53,6 +53,7 @@ fun ItemEditScreen(
             InventoryTopAppBar(
                 title = stringResource(ItemEditDestination.titleRes),
                 canNavigateBack = true,
+                canShare = false,
                 navigateUp = onNavigateUp
             )
         },
@@ -67,7 +68,7 @@ fun ItemEditScreen(
                     navigateBack()
                 }
             },
-            modifier = modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding)
         )
     }
 }
