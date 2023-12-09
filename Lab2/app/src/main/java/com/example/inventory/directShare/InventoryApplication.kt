@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.app.Application
 import com.example.inventory.data.AppContainer

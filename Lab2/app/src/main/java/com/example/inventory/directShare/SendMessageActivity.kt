@@ -1,4 +1,4 @@
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.app.Activity
 import android.content.Intent
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.example.inventory.R
 
 class SendMessageActivity : Activity() {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.itemEntry
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -207,6 +206,7 @@ fun ItemInputForm(
         OutlinedTextField(
             value = itemDetails.supplierPhone,
             onValueChange = { onValueChange(itemDetails.copy(supplierPhone = it)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             label = { Text(stringResource(R.string.supplier_phone)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,

@@ -1,4 +1,4 @@
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.inventory.R
 
 class SelectContactActivity : Activity() {
 

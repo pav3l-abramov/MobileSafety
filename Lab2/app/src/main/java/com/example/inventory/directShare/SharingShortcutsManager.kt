@@ -1,4 +1,4 @@
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.content.Context
 import android.content.Intent

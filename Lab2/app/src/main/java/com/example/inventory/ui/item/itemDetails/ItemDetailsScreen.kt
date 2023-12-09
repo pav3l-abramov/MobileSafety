@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.itemDetails
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -53,13 +53,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.inventory.Events
+import com.example.inventory.directShare.Events
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.MainActivity
-import com.example.inventory.MyFragmentNavigation
+import com.example.inventory.directShare.MyFragmentNavigation
 import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.AppViewModelProvider
+import com.example.inventory.ui.item.itemEntry.formatedPrice
+import com.example.inventory.ui.item.itemEntry.toItem
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
@@ -281,7 +283,12 @@ fun ItemDetailsScreenPreview() {
         ItemDetailsBody(
             ItemDetailsUiState(
                 outOfStock = true,
-                itemDetails = ItemDetails(1, "Pen", "$100", "10")
+                itemDetails = com.example.inventory.ui.item.itemEntry.ItemDetails(
+                    1,
+                    "Pen",
+                    "$100",
+                    "10"
+                )
             ),
             onSellItem = {},
             onDelete = {}

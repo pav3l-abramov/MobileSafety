@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.editItem
 
 import android.util.Patterns
 import androidx.compose.runtime.getValue
@@ -24,6 +24,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
+import com.example.inventory.ui.item.itemEntry.ItemDetails
+import com.example.inventory.ui.item.itemEntry.ItemUiState
+import com.example.inventory.ui.item.itemEntry.toItem
+import com.example.inventory.ui.item.itemEntry.toItemUiState
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R.string
-import com.example.inventory.ui.item.ItemDetailsViewModel
+import com.example.inventory.ui.item.itemDetails.ItemDetailsViewModel
 import com.example.inventory.ui.navigation.InventoryNavHost
 
 /**

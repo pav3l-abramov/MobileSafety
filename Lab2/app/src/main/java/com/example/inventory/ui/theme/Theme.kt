@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -130,4 +131,16 @@ fun InventoryTheme(
         shapes = Shapes,
         content = content
     )
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setNavigationBarColor(
+            color = (if (darkTheme) DarkColorScheme.background else LightColorScheme.background) as Color,
+            darkIcons =  (!darkTheme)
+        )
+        systemUiController.setStatusBarColor(
+            color = (if (darkTheme) DarkColorScheme.background else LightColorScheme.background) as Color,
+            darkIcons =  (!darkTheme)
+        )
+    }
 }

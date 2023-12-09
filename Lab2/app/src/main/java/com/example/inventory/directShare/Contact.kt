@@ -1,6 +1,7 @@
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.widget.TextView
+import com.example.inventory.R
 
 data class Contact(val name: String) {
     val icon = R.mipmap.ic_launcher

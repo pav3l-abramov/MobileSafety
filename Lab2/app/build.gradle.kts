@@ -94,4 +94,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.sharetarget:sharetarget:1.2.0-rc01")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 }

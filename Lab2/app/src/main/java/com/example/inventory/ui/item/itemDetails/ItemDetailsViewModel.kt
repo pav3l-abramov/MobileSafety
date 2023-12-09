@@ -1,12 +1,15 @@
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.itemDetails
 
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.Events
-import com.example.inventory.MyFragmentNavigation
+import com.example.inventory.directShare.Events
+import com.example.inventory.directShare.MyFragmentNavigation
 import com.example.inventory.data.ItemsRepository
+import com.example.inventory.ui.item.itemEntry.ItemDetails
+import com.example.inventory.ui.item.itemEntry.toItem
+import com.example.inventory.ui.item.itemEntry.toItemDetails
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull

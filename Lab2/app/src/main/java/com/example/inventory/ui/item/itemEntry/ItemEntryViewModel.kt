@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.itemEntry
 
 import android.util.Patterns
 import androidx.compose.runtime.getValue
