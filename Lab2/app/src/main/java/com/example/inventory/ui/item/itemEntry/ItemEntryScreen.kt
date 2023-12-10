@@ -158,7 +158,7 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = itemDetails.price.isEmpty()
+            isError = itemDetails.price.isEmpty()||!(itemDetails.price.isNotBlank() && itemDetails.price.toDoubleOrNull() != null)
         )
         OutlinedTextField(
             value = itemDetails.quantity,
@@ -173,7 +173,7 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = itemDetails.quantity.isEmpty()
+            isError = itemDetails.quantity.isEmpty()||!(itemDetails.quantity.isNotBlank() && itemDetails.quantity.all { it in '0'..'9' })
         )
         OutlinedTextField(
             value = itemDetails.supplierName,
@@ -216,7 +216,7 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches() && itemDetails.supplierPhone.startsWith("+7") && itemDetails.supplierPhone.length == 12))
+            isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches()  && itemDetails.supplierPhone.length  >= 5))
         )
         if (enabled) {
             Text(

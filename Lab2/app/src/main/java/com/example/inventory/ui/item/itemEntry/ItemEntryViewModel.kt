@@ -60,12 +60,25 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
             supplierPhone.isBlank() || (Patterns.PHONE.matcher(supplierPhone).matches()
-                    && supplierPhone.startsWith("+7") && supplierPhone.length == 12)
+                     && supplierPhone.length >= 5)
         }
     }
 
+    private fun validateQuantity(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            quantity.isNotBlank() && quantity.all { it in '0'..'9' }
+        }
+    }
+
+    private fun validatePrice(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            price.isNotBlank() && price.toDoubleOrNull() != null
+        }
+    }
+
+
     suspend fun saveItem() {
-        if (validateInput() && validateEmail() && validatePhone()) {
+        if (validateInput() && validateEmail() && validatePhone()&& validateQuantity() && validatePrice()) {
             itemsRepository.insertItem(itemUiState.itemDetails.toItem())
         }
     }

@@ -74,7 +74,20 @@ class ItemEditViewModel(
 
     private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            supplierPhone.isBlank() || Patterns.PHONE.matcher(supplierPhone).matches()
+            supplierPhone.isBlank() || (Patterns.PHONE.matcher(supplierPhone).matches()
+                    && supplierPhone.length >= 5)
+        }
+    }
+
+    private fun validateQuantity(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            quantity.isNotBlank() && quantity.all { it in '0'..'9' }
+        }
+    }
+
+    private fun validatePrice(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            price.isNotBlank() && price.toDoubleOrNull() != null
         }
     }
 
