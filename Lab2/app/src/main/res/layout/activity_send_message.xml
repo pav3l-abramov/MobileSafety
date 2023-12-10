@@ -45,7 +45,7 @@
             android:drawablePadding="@dimen/margin_medium"
             android:gravity="center_vertical"
             android:textAppearance="@android:style/TextAppearance.Material.Body1"
-            tools:drawableStart="@mipmap/logo_avatar"
+            tools:drawableStart="@android:color/black"
             tools:text="Taro" />
 
     </LinearLayout>

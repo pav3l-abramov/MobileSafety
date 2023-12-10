@@ -19,6 +19,7 @@
 package com.example.inventory
 
 import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R.string
+
 import com.example.inventory.ui.item.itemDetails.ItemDetailsViewModel
 import com.example.inventory.ui.navigation.InventoryNavHost
 
@@ -50,7 +52,6 @@ fun InventoryApp(navController: NavHostController = rememberNavController()) {
 /**
  * App bar to display title and conditionally display the back navigation.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryTopAppBar(
     title: String,
@@ -62,6 +63,7 @@ fun InventoryTopAppBar(
     viewModel: ItemDetailsViewModel? = null,
 ) {
     val context = LocalContext.current
+
     CenterAlignedTopAppBar(
         title = { Text(title) },
         modifier = modifier,
@@ -75,7 +77,8 @@ fun InventoryTopAppBar(
                     )
                 }
             }
-        },        actions = {
+        },
+        actions = {
             if (canShare) {
                 IconButton(onClick = { viewModel!!.shareItem(context) },
                     modifier = Modifier) {

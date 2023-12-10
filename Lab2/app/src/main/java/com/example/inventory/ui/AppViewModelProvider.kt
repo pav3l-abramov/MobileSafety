@@ -22,7 +22,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.inventory.directShare.InventoryApplication
+import com.example.inventory.InventoryApplication
 import com.example.inventory.ui.home.HomeViewModel
 import com.example.inventory.ui.item.itemDetails.ItemDetailsViewModel
 import com.example.inventory.ui.item.editItem.ItemEditViewModel
