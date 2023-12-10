@@ -56,12 +56,6 @@ class SendMessageActivity : Activity() {
 
         // Set up the UI.
         prepareUi()
-
-        // The contact ID will not be passed on when the user clicks on the app icon rather than any
-        // of the Direct Share icons. In this case, we show another dialog for selecting a contact.
-//        if (contactId == Contact.invalidId) {
-//            selectContact()
-//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {

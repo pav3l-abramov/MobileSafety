@@ -63,6 +63,7 @@ import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.item.itemEntry.formatedPrice
 import com.example.inventory.ui.item.itemEntry.toItem
 import com.example.inventory.ui.navigation.NavigationDestination
+import com.example.inventory.ui.setting.SettingViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
 
@@ -79,7 +80,8 @@ fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    settingViewModel: SettingViewModel
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()

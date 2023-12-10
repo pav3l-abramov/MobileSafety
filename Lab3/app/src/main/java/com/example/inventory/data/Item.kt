@@ -23,7 +23,7 @@ import androidx.room.PrimaryKey
 /**
  * Entity data class represents a single row in the database.
  */
-@Entity(tableName = "items")
+@Entity(tableName = "items_lab3")
 data class Item(
     @PrimaryKey(autoGenerate = true)
     val id: Int=0,
@@ -33,4 +33,8 @@ data class Item(
     val supplierName: String,
     val supplierEmail: String,
     val supplierPhone: String,
+    val methodOfCreation: MethodOfCreation
 )
+enum class MethodOfCreation {
+    MANUAL, FILE
+}
