@@ -60,7 +60,8 @@ class ItemDetailsViewModel(
                     "Quantity: ${item.quantity}\n" +
                     "Supplier: ${item.supplierName}\n" +
                     "Email: ${item.supplierEmail}\n" +
-                    "Phone: ${item.supplierPhone}\n"
+                    "Phone: ${item.supplierPhone}\n"+
+                    "Additional number: ${item.additionalNumber}\n"
         ))
     }
 

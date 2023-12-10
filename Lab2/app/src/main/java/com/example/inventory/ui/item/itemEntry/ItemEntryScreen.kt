@@ -218,6 +218,22 @@ fun ItemInputForm(
             singleLine = true,
             isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches()  && itemDetails.supplierPhone.length  >= 5))
         )
+        OutlinedTextField(
+            value = itemDetails.additionalNumber,
+            onValueChange = { onValueChange(itemDetails.copy(additionalNumber = it)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            label = { Text(stringResource(R.string.additional_number)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            isError = !(itemDetails.additionalNumber.isEmpty() || (Patterns.PHONE.matcher(itemDetails.additionalNumber).matches()  && itemDetails.additionalNumber.length  >= 5))
+        )
+
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),

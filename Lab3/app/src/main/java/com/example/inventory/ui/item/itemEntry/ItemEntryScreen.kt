@@ -16,7 +16,10 @@
 
 package com.example.inventory.ui.item.itemEntry
 
+import android.app.Activity
 import android.util.Patterns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,8 +35,11 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,11 +47,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
+import com.example.inventory.data.MethodOfCreation
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.setting.SettingViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileInputStream
 import java.util.Currency
 import java.util.Locale
 
@@ -64,6 +74,39 @@ fun ItemEntryScreen(
     settingViewModel: SettingViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+    val resultLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts
+            .StartActivityForResult()) { result->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.also { uri ->
+                val cacheFile = File(context.cacheDir, "temp.json")
+
+                cacheFile.outputStream().use { output->
+                    context.contentResolver.openFileDescriptor(uri,"r")?.use { descriptor->
+                        FileInputStream(descriptor.fileDescriptor).use { input->
+                            input.copyTo(output)
+                            input.close()
+                        }
+                    }
+                    output.close()
+                }
+
+                val encryptedFile = settingViewModel.encryptFile(cacheFile)
+                encryptedFile.openFileInput().use { input->
+                    val receivedDetails = Json.decodeFromString<ItemDetails>(input.bufferedReader().readText())
+                    receivedDetails.methodOfCreation = MethodOfCreation.FILE
+                    viewModel.updateUiState(
+                        receivedDetails
+                    )
+                    input.close()
+                }
+
+                cacheFile.delete()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -87,7 +130,9 @@ fun ItemEntryScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            setting = settingViewModel,
+            useDefaults = true
         )
     }
 }
@@ -97,7 +142,9 @@ fun ItemEntryBody(
     itemUiState: ItemUiState,
     onItemValueChange: (ItemDetails) -> Unit,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    setting: SettingViewModel,
+    useDefaults: Boolean = false
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large)),
@@ -106,7 +153,9 @@ fun ItemEntryBody(
         ItemInputForm(
             itemDetails = itemUiState.itemDetails,
             onValueChange = onItemValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            setting = setting,
+            useDefaults = useDefaults
         )
         Button(
             onClick = onSaveClick,
@@ -126,8 +175,11 @@ fun ItemInputForm(
     modifier: Modifier = Modifier,
     onValueChange: (ItemDetails) -> Unit = {},
     enabled: Boolean = true,
-    viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    setting: SettingViewModel,
+    useDefaults: Boolean = false
 ) {
+    val useDefaultValues = setting.getBoolPref("useDefaultValues")
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -177,9 +229,13 @@ fun ItemInputForm(
             singleLine = true,
             isError = itemDetails.quantity.isEmpty()||!(itemDetails.quantity.isNotBlank() && itemDetails.quantity.all { it in '0'..'9' })
         )
+        val supplierName = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultSupplier")} else {itemDetails.supplierName}) }
         OutlinedTextField(
-            value = itemDetails.supplierName,
-            onValueChange = { onValueChange(itemDetails.copy(supplierName = it)) },
+            value = if (useDefaults && useDefaultValues) { supplierName.value } else { itemDetails.supplierName },
+            onValueChange = {
+                supplierName.value = it
+                onValueChange(itemDetails.copy(supplierName = it))
+            },
             label = { Text(stringResource(R.string.supplier_name_req)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -191,9 +247,13 @@ fun ItemInputForm(
             singleLine = true,
             isError = itemDetails.supplierName.isEmpty()
         )
+        val supplierEmail = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultEmail")} else {itemDetails.supplierEmail}) }
         OutlinedTextField(
-            value = itemDetails.supplierEmail,
-            onValueChange = { onValueChange(itemDetails.copy(supplierEmail = it)) },
+            value = if (useDefaults && useDefaultValues) { supplierEmail.value } else { itemDetails.supplierEmail },
+            onValueChange = {
+                supplierEmail.value = it
+                onValueChange(itemDetails.copy(supplierEmail = it))
+            },
             label = { Text(stringResource(R.string.supplier_email)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -205,10 +265,13 @@ fun ItemInputForm(
             singleLine = true,
             isError = !(itemDetails.supplierEmail.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(itemDetails.supplierEmail).matches())
         )
+        val supplierPhone = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultPhone")} else {itemDetails.supplierPhone}) }
         OutlinedTextField(
-            value = itemDetails.supplierPhone,
-            onValueChange = { onValueChange(itemDetails.copy(supplierPhone = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            value = if (useDefaults && useDefaultValues) { supplierPhone.value } else { itemDetails.supplierPhone },
+            onValueChange = {
+                supplierPhone.value = it
+                onValueChange(itemDetails.copy(supplierPhone = it))
+            },
             label = { Text(stringResource(R.string.supplier_phone)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -220,6 +283,25 @@ fun ItemInputForm(
             singleLine = true,
             isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches()  && itemDetails.supplierPhone.length  >= 5))
         )
+        val additionalNumber = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultAdditionalNumber")} else {itemDetails.additionalNumber}) }
+        OutlinedTextField(
+            value = if (useDefaults && useDefaultValues) { supplierPhone.value } else { itemDetails.additionalNumber },
+            onValueChange = {
+                additionalNumber.value = it
+                onValueChange(itemDetails.copy(additionalNumber = it))
+            },
+            label = { Text(stringResource(R.string.additional_number)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            isError = !(itemDetails.additionalNumber.isEmpty() || (Patterns.PHONE.matcher(itemDetails.additionalNumber).matches()  && itemDetails.additionalNumber.length  >= 5))
+        )
+
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),
@@ -229,14 +311,3 @@ fun ItemInputForm(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun ItemEntryScreenPreview() {
-    InventoryTheme {
-        ItemEntryBody(itemUiState = ItemUiState(
-            ItemDetails(
-                name = "Item name", price = "10.00", quantity = "5"
-            )
-        ), onItemValueChange = {}, onSaveClick = {})
-    }
-}

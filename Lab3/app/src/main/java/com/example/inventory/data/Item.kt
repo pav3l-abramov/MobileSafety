@@ -33,6 +33,7 @@ data class Item(
     val supplierName: String,
     val supplierEmail: String,
     val supplierPhone: String,
+    val additionalNumber: String,
     val methodOfCreation: MethodOfCreation
 )
 enum class MethodOfCreation {

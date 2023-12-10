@@ -42,7 +42,7 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      */
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails))
+            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails) && validateAdditionalNumber(itemDetails))
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
@@ -75,6 +75,12 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
             price.isNotBlank() && price.toDoubleOrNull() != null
         }
     }
+    private fun validateAdditionalNumber(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            additionalNumber.isBlank() || (Patterns.PHONE.matcher(additionalNumber).matches()
+                    && additionalNumber.length >= 5)
+        }
+    }
 
 
     suspend fun saveItem() {
@@ -99,7 +105,8 @@ data class ItemDetails(
     val quantity: String = "",
     val supplierName: String = "",
     val supplierEmail: String = "",
-    val supplierPhone: String = ""
+    val supplierPhone: String = "",
+    val additionalNumber: String = ""
 )
 
 /**
@@ -114,7 +121,8 @@ fun ItemDetails.toItem(): Item = Item(
     quantity = quantity.toIntOrNull() ?: 0,
     supplierName = supplierName,
     supplierEmail = supplierEmail,
-    supplierPhone = supplierPhone
+    supplierPhone = supplierPhone,
+    additionalNumber=additionalNumber
 )
 
 fun Item.formatedPrice(): String {
@@ -139,7 +147,8 @@ fun Item.toItemDetails(): ItemDetails = ItemDetails(
     quantity = quantity.toString(),
     supplierName = supplierName,
     supplierEmail = supplierEmail,
-    supplierPhone = supplierPhone
+    supplierPhone = supplierPhone,
+    additionalNumber=additionalNumber
 )
 
 

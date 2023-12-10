@@ -23,6 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.MethodOfCreation
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.text.NumberFormat
 
 /**
@@ -77,6 +80,14 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     }
 
 
+    private fun validateAdditionalNumber(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            additionalNumber.isBlank() || (Patterns.PHONE.matcher(additionalNumber).matches()
+                    && additionalNumber.length >= 5)
+        }
+    }
+
+
     suspend fun saveItem() {
         if (validateInput() && validateEmail() && validatePhone()&& validateQuantity() && validatePrice()) {
             itemsRepository.insertItem(itemUiState.itemDetails.toItem())
@@ -92,14 +103,17 @@ data class ItemUiState(
     val isEntryValid: Boolean = false
 )
 
+@Serializable
 data class ItemDetails(
-    val id: Int = 0,
+    @Transient val id: Int = 0,
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
     val supplierName: String = "",
     val supplierEmail: String = "",
-    val supplierPhone: String = ""
+    val supplierPhone: String = "",
+    val additionalNumber: String = "",
+    @Transient var methodOfCreation: MethodOfCreation = MethodOfCreation.MANUAL
 )
 
 /**
@@ -114,7 +128,9 @@ fun ItemDetails.toItem(): Item = Item(
     quantity = quantity.toIntOrNull() ?: 0,
     supplierName = supplierName,
     supplierEmail = supplierEmail,
-    supplierPhone = supplierPhone
+    supplierPhone = supplierPhone,
+    additionalNumber=additionalNumber,
+    methodOfCreation = methodOfCreation
 )
 
 fun Item.formatedPrice(): String {
@@ -139,7 +155,9 @@ fun Item.toItemDetails(): ItemDetails = ItemDetails(
     quantity = quantity.toString(),
     supplierName = supplierName,
     supplierEmail = supplierEmail,
-    supplierPhone = supplierPhone
+    supplierPhone = supplierPhone,
+    additionalNumber=additionalNumber,
+    methodOfCreation = methodOfCreation
 )
 
 

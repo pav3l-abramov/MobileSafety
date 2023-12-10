@@ -78,8 +78,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingViewModel: SettingViewModel
 ) {
-    val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val homeUiState by viewModel.homeUiState.collectAsState()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -87,7 +87,8 @@ fun HomeScreen(
             InventoryTopAppBar(
                 title = stringResource(HomeDestination.titleRes),
                 canNavigateBack = false,
-                canShare = false,
+                settings = true,
+                navigateToSettings = navigateToSetting,
                 scrollBehavior = scrollBehavior
             )
         },
@@ -109,14 +110,18 @@ fun HomeScreen(
             onItemClick = navigateToItemUpdate,
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            setting = settingViewModel
         )
     }
 }
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    setting: SettingViewModel
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -132,7 +137,8 @@ private fun HomeBody(
             InventoryList(
                 itemList = itemList,
                 onItemClick = { onItemClick(it.id) },
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
+                setting = setting
             )
         }
     }
@@ -140,22 +146,25 @@ private fun HomeBody(
 
 @Composable
 private fun InventoryList(
-    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier, setting: SettingViewModel
 ) {
+    val hideSensitiveData = setting.getBoolPref("hideSensitiveData")
     LazyColumn(modifier = modifier) {
         items(items = itemList, key = { it.id }) { item ->
             InventoryItem(item = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+                    .clickable { onItemClick(item) },
+                hideSensitiveData = hideSensitiveData)
         }
     }
 }
 
 @Composable
 private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier
+    item: Item, modifier: Modifier = Modifier, hideSensitiveData: Boolean
 ) {
+
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -185,30 +194,3 @@ private fun InventoryItem(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeBodyPreview() {
-    InventoryTheme {
-        HomeBody(listOf(
-            Item(1, "Game", 100.0, 20, "oaomegalul", "oao@gmail.com", "+79044114488"), Item(2, "Pen", 200.0, 30, "oaomegalul", "oao@gmail.com", "+79044114488"), Item(3, "TV", 300.0, 50, "oaomegalul", "oao@gmail.com", "+79044114488")
-        ), onItemClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeBodyEmptyListPreview() {
-    InventoryTheme {
-        HomeBody(listOf(), onItemClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun InventoryItemPreview() {
-    InventoryTheme {
-        InventoryItem(
-            Item(1, "Game", 100.0, 20, "oaomegalul", "oao@gmail.com", "+79044114488"),
-        )
-    }
-}

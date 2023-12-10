@@ -27,6 +27,7 @@ import com.example.inventory.ui.home.HomeViewModel
 import com.example.inventory.ui.item.itemDetails.ItemDetailsViewModel
 import com.example.inventory.ui.item.editItem.ItemEditViewModel
 import com.example.inventory.ui.item.itemEntry.ItemEntryViewModel
+import com.example.inventory.ui.setting.SettingViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire Inventory app
@@ -56,6 +57,11 @@ object AppViewModelProvider {
         // Initializer for HomeViewModel
         initializer {
             HomeViewModel(inventoryApplication().container.itemsRepository)
+        }
+
+        // Initializer for SettingsViewModel
+        initializer {
+            SettingViewModel(inventoryApplication())
         }
     }
 }

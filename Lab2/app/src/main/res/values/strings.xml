@@ -39,6 +39,7 @@
     <string name="supplier_name_req">Supplier Name*</string>
     <string name="supplier_email">Supplier Email</string>
     <string name="supplier_phone">Supplier Phone</string>
+    <string name="additional_number">Additional number</string>
 
     <string name="name">Name: </string>
     <string name="price_">Price: </string>
