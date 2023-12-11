@@ -24,6 +24,7 @@
     <string name="item">Item</string>
     <string name="item_detail_title">Item Details</string>
     <string name="item_entry_title">Add Item</string>
+    <string name="settings_title">Settings</string>
     <string name="item_name_req">Item Name*</string>
     <string name="item_price_req">Item Price*</string>
     <string name="no">No</string>
@@ -37,7 +38,6 @@
     <string name="required_fields">*required fields</string>
 
     <string name="supplier_name_req">Supplier Name*</string>
-    <string name="supplier_name">Supplier Name</string>
     <string name="supplier_email">Supplier Email</string>
     <string name="supplier_phone">Supplier Phone</string>
     <string name="method_of_creation">Method of Creation</string>
@@ -61,9 +61,6 @@
     <string name="hint_body">Edit your message</string>
     <string name="message_sent">Sent a message \"%1$s\" to %2$s</string>
 
-    <string name="setting_title">Setting</string>
-    <string name="additional_number">Additional number</string>
-    <string name="default_additional_number">Default additional number</string>
     <string name="default_supplier_name">Default Supplier Name</string>
     <string name="default_supplier_email">Default Supplier Email</string>
     <string name="default_supplier_phone">Default Supplier Phone</string>

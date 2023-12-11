@@ -16,6 +16,8 @@
 
 package com.example.inventory.data
 
+import android.provider.ContactsContract.CommonDataKinds.Email
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -23,19 +25,19 @@ import androidx.room.PrimaryKey
 /**
  * Entity data class represents a single row in the database.
  */
-@Entity(tableName = "items_lab3")
+@Entity(tableName = "items")
 data class Item(
     @PrimaryKey(autoGenerate = true)
-    val id: Int=0,
+    val id: Int = 0,
     val name: String,
     val price: Double,
     val quantity: Int,
     val supplierName: String,
     val supplierEmail: String,
     val supplierPhone: String,
-    val additionalNumber: String,
     val methodOfCreation: MethodOfCreation
 )
+
 enum class MethodOfCreation {
     MANUAL, FILE
 }

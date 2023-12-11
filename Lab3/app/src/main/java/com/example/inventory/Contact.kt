@@ -1,10 +1,18 @@
-package com.example.inventory.directShare
+package com.example.inventory
 
 import android.widget.TextView
-import com.example.inventory.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 
+/**
+ * Provides the list of dummy contacts.
+ * This sample implements this as constants, but real-life apps should use a database and such.
+ */
 data class Contact(val name: String) {
+
+    //val icon = R.mipmap.logo_avatar
     val icon = R.mipmap.ic_launcher
+    //val icon = Icons.Filled.AccountCircle
 
     companion object {
         /**
@@ -46,6 +54,7 @@ data class Contact(val name: String) {
 fun Contact.bind(textView: TextView) {
     with(textView) {
         text = name
+        //setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
         setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
     }
 }

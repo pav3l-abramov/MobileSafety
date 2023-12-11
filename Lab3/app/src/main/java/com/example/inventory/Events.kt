@@ -1,14 +1,15 @@
-package com.example.inventory.directShare
+package com.example.inventory
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import java.util.HashSet
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 open class NavigationEvent(var isHandled: Boolean = false, var type: Events.Type = Events.Type.EXECUTE_WITHOUT_LIMITS)
 
 class Events private constructor() {
-    class EventObserver(private val handlerBlock: (NavigationEvent) -> Unit) :
-        Observer<NavigationEvent> {
+    class EventObserver(private val handlerBlock: (NavigationEvent) -> Unit) : Observer<NavigationEvent> {
         private val executedEvents: HashSet<String> = hashSetOf()
 
         /** Clear Executed Events */
@@ -50,9 +51,7 @@ class Events private constructor() {
         fun waitAndExecute(event: NavigationEvent) = newEvent(event, Type.WAIT_OBSERVER_IF_NEEDED)
 
         /** Wait Observer Available and Emit Event for Execution Once */
-        fun waitAndExecuteOnce(event: NavigationEvent) = newEvent(event,
-            Type.WAIT_OBSERVER_IF_NEEDED_AND_EXECUTE_ONCE
-        )
+        fun waitAndExecuteOnce(event: NavigationEvent) = newEvent(event, Type.WAIT_OBSERVER_IF_NEEDED_AND_EXECUTE_ONCE)
 
         /** Clear Events that are Waiting for Observer */
         fun clearWaitingEvents() = waitingEvents.clear()
@@ -101,6 +100,7 @@ class Events private constructor() {
         WAIT_OBSERVER_IF_NEEDED_AND_EXECUTE_ONCE
     }
 }
+
 interface MyFragmentNavigation {
     class ShareProduct(val productInfo: String) : NavigationEvent()
 }

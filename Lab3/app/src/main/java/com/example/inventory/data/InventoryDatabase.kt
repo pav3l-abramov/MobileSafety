@@ -5,20 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Item::class], version = 2, exportSchema = false)
+@Database(entities = [Item::class], version = 4, exportSchema = false)
 abstract class InventoryDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
+
     companion object {
         @Volatile
         private var Instance: InventoryDatabase? = null
+
         fun getDatabase(context: Context): InventoryDatabase {
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, InventoryDatabase::class.java, "item_database_lab3")
-                    .build()
-                    .also { Instance = it }
+                Room.databaseBuilder(context, InventoryDatabase::class.java, "item_database").fallbackToDestructiveMigration().build().also { Instance = it }
             }
-
         }
     }
-
 }

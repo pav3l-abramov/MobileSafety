@@ -1,4 +1,5 @@
-package com.example.inventory.directShare
+package com.example.inventory
+
 
 import android.app.Activity
 import android.content.Intent
@@ -8,8 +9,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.inventory.R
 
+/**
+ * The dialog for selecting a contact to share the text with. This dialog is shown when the user
+ * taps on this sample's icon rather than any of the Direct Share contacts.
+ */
 class SelectContactActivity : Activity() {
 
     private val contactAdapter = object : RecyclerView.Adapter<ContactViewHolder>() {

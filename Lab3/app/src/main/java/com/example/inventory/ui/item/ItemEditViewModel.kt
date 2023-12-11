@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item.editItem
+package com.example.inventory.ui.item
 
 import android.util.Patterns
 import androidx.compose.runtime.getValue
@@ -24,17 +24,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
-import com.example.inventory.ui.item.itemEntry.ItemDetails
-import com.example.inventory.ui.item.itemEntry.ItemUiState
-import com.example.inventory.ui.item.itemEntry.toItem
-import com.example.inventory.ui.item.itemEntry.toItemUiState
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
- */
 
 /**
  * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
@@ -66,19 +59,6 @@ class ItemEditViewModel(
         }
     }
 
-    private fun validateEmail(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
-        return with(uiState) {
-            supplierEmail.isBlank() || Patterns.EMAIL_ADDRESS.matcher(supplierEmail).matches()
-        }
-    }
-
-    private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
-        return with(uiState) {
-            supplierPhone.isBlank() || (Patterns.PHONE.matcher(supplierPhone).matches()
-                    && supplierPhone.length >= 5)
-        }
-    }
-
     private fun validateQuantity(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
             quantity.isNotBlank() && quantity.all { it in '0'..'9' }
@@ -91,9 +71,21 @@ class ItemEditViewModel(
         }
     }
 
+    private fun validateEmail(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            supplierEmail.isBlank() || Patterns.EMAIL_ADDRESS.matcher(supplierEmail).matches()
+        }
+    }
+
+    private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            supplierPhone.isBlank() || Patterns.PHONE.matcher(supplierPhone).matches()
+        }
+    }
+
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails))
+            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateQuantity(itemDetails) && validatePrice(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails))
     }
 
     suspend fun updateItem() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item.editItem
+package com.example.inventory.ui.item
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +28,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
 import com.example.inventory.ui.AppViewModelProvider
-import com.example.inventory.ui.item.itemEntry.ItemEntryBody
 import com.example.inventory.ui.navigation.NavigationDestination
-import com.example.inventory.ui.setting.SettingViewModel
+import com.example.inventory.ui.settings.SettingsViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
 
@@ -48,7 +47,7 @@ fun ItemEditScreen(
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ItemEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    settingViewModel: SettingViewModel
+    settingsViewModel: SettingsViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
@@ -71,7 +70,8 @@ fun ItemEditScreen(
                 }
             },
             modifier = Modifier.padding(innerPadding),
-            setting = settingViewModel
+            settings = settingsViewModel
         )
     }
 }
+
