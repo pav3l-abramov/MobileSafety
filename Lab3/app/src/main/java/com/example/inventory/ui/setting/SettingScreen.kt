@@ -73,7 +73,7 @@ fun SettingScreen(
                 //onValueChange = { onValueChange(itemDetails.copy(name = it)) },
                 onValueChange = {
                     field1.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultSupplier = it)) },
+                    viewModel.updateSettingUiState(viewModel.settingUiState.copy(defaultSupplier = it)) },
                 label = { Text(stringResource(R.string.default_supplier_name)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -90,7 +90,7 @@ fun SettingScreen(
                 value = field2.value,
                 onValueChange = {
                     field2.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultEmail = it)) },
+                    viewModel.updateSettingUiState(viewModel.settingUiState.copy(defaultEmail = it)) },
                 label = { Text(stringResource(R.string.default_supplier_email)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -107,7 +107,7 @@ fun SettingScreen(
                 value = field3.value,
                 onValueChange = {
                     field3.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultPhone = it)) },
+                    viewModel.updateSettingUiState(viewModel.settingUiState.copy(defaultPhone = it)) },
                 label = { Text(stringResource(R.string.default_supplier_phone)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -124,7 +124,7 @@ fun SettingScreen(
                 value = field4.value,
                 onValueChange = {
                     field4.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultAdditionalNumber = it)) },
+                    viewModel.updateSettingUiState(viewModel.settingUiState.copy(defaultAdditionalNumber = it)) },
                 label = { Text(stringResource(R.string.default_additional_number)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -147,7 +147,7 @@ fun SettingScreen(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(useDefaultValues = it))
+                        viewModel.updateSettingUiState(viewModel.settingUiState.copy(useDefaultValues = it))
                         Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
@@ -162,7 +162,7 @@ fun SettingScreen(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(hideSensitiveData = it))
+                        viewModel.updateSettingUiState(viewModel.settingUiState.copy(hideSensitiveData = it))
                         Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
@@ -177,14 +177,14 @@ fun SettingScreen(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(allowSharingData = it))
+                        viewModel.updateSettingUiState(viewModel.settingUiState.copy(allowSharingData = it))
                         Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
             }
             Button(
                 onClick = {
-                    viewModel.saveSettings()
+                    viewModel.saveSetting()
                     navigateBack.invoke()
                 },
                 enabled = viewModel.validateSupplier() && viewModel.validateEmail() && viewModel.validatePhone(),

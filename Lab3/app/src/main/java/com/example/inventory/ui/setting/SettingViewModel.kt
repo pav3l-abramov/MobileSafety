@@ -60,7 +60,7 @@ class SettingViewModel(private val app: Application) : ViewModel() {
         editor.apply()
     }
 
-    fun updateSettingsUiState(setting: SettingUiState) {
+    fun updateSettingUiState(setting: SettingUiState) {
         settingUiState =
             SettingUiState(
                 defaultSupplier = setting.defaultSupplier,
@@ -98,7 +98,7 @@ class SettingViewModel(private val app: Application) : ViewModel() {
         }
     }
 
-    fun saveSettings() {
+    fun saveSetting() {
         sharedPreferences.edit()
             .putString("defaultSupplier",settingUiState.defaultSupplier)
             .putString("defaultEmail",settingUiState.defaultEmail)
