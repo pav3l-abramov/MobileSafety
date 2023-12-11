@@ -25,15 +25,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.inventory.ui.home.HomeDestination
 import com.example.inventory.ui.home.HomeScreen
-import com.example.inventory.ui.item.ItemDetailsDestination
-import com.example.inventory.ui.item.ItemDetailsScreen
-import com.example.inventory.ui.item.ItemEditDestination
-import com.example.inventory.ui.item.ItemEditScreen
-import com.example.inventory.ui.item.ItemEntryDestination
-import com.example.inventory.ui.item.ItemEntryScreen
-import com.example.inventory.ui.settings.SettingsDestination
-import com.example.inventory.ui.settings.SettingsScreen
-import com.example.inventory.ui.settings.SettingsViewModel
+import com.example.inventory.ui.item.itemDetails.ItemDetailsDestination
+import com.example.inventory.ui.item.itemDetails.ItemDetailsScreen
+import com.example.inventory.ui.item.editItem.ItemEditDestination
+import com.example.inventory.ui.item.editItem.ItemEditScreen
+import com.example.inventory.ui.item.itemEntry.ItemEntryDestination
+import com.example.inventory.ui.item.itemEntry.ItemEntryScreen
+import com.example.inventory.ui.setting.SettingDestination
+import com.example.inventory.ui.setting.SettingScreen
+import com.example.inventory.ui.setting.SettingViewModel
 
 /**
  * Provides Navigation graph for the application.
@@ -42,7 +42,7 @@ import com.example.inventory.ui.settings.SettingsViewModel
 fun InventoryNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel
+    settingViewModel: SettingViewModel
 ) {
     NavHost(
         navController = navController,
@@ -52,18 +52,16 @@ fun InventoryNavHost(
         composable(route = HomeDestination.route) {
             HomeScreen(
                 navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
-                navigateToSettings = { navController.navigate(SettingsDestination.route) },
-                navigateToItemUpdate = {
-                    navController.navigate("${ItemDetailsDestination.route}/${it}")
-                },
-                settingsViewModel = settingsViewModel
+                navigateToItemUpdate = {navController.navigate("${ItemDetailsDestination.route}/${it}")},
+                navigateToSetting = { navController.navigate(SettingDestination.route) },
+                settingViewModel = settingViewModel
             )
         }
         composable(route = ItemEntryDestination.route) {
             ItemEntryScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() },
-                settingsViewModel = settingsViewModel
+                settingViewModel = settingViewModel
             )
         }
         composable(
@@ -75,7 +73,7 @@ fun InventoryNavHost(
             ItemDetailsScreen(
                 navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") },
                 navigateBack = { navController.navigateUp() },
-                settingsViewModel = settingsViewModel
+                settingViewModel = settingViewModel
             )
         }
         composable(
@@ -87,16 +85,13 @@ fun InventoryNavHost(
             ItemEditScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() },
-                settingsViewModel = settingsViewModel
+                settingViewModel = settingViewModel
             )
         }
         composable(
-            route = SettingsDestination.route,
-//            arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {
-//                type = NavType.IntType
-//            })
+            route = SettingDestination.route,
         ) {
-            SettingsScreen(
+            SettingScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() }
             )

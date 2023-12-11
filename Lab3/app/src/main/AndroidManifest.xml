@@ -42,7 +42,7 @@
         </activity>
 
         <activity
-            android:name=".SendMessageActivity"
+            android:name=".directShare.SendMessageActivity"
             android:label="@string/app_name"
             android:theme="@style/DirectShareDialogTheme"
             android:exported="true">
@@ -61,7 +61,7 @@
         </activity>
 
         <activity
-            android:name=".SelectContactActivity"
+            android:name=".directShare.SelectContactActivity"
             android:label="@string/app_name"
             android:theme="@style/DirectShareDialogTheme" />
 
@@ -77,7 +77,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/file_path" />
         </provider>
     </application>
 

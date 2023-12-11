@@ -20,9 +20,7 @@ package com.example.inventory
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
@@ -47,9 +45,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R.string
 import com.example.inventory.ui.AppViewModelProvider
-import com.example.inventory.ui.item.ItemDetailsViewModel
+
+import com.example.inventory.ui.item.itemDetails.ItemDetailsViewModel
 import com.example.inventory.ui.navigation.InventoryNavHost
-import com.example.inventory.ui.settings.SettingsViewModel
+import com.example.inventory.ui.setting.SettingViewModel
 
 /**
  * Top level composable that represents screens for the application.
@@ -57,22 +56,23 @@ import com.example.inventory.ui.settings.SettingsViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun InventoryApp(navController: NavHostController = rememberNavController(),
-                 settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
-    InventoryNavHost(navController = navController, settingsViewModel = settingsViewModel)
+                 settingViewModel: SettingViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    InventoryNavHost(navController = navController, settingViewModel = settingViewModel)
 }
 
 /**
  * App bar to display title and conditionally display the back navigation.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     showShareButton: Boolean = false,
     canShare: Boolean = false,
-    settings: Boolean = false,
+    setting: Boolean = false,
     uploadFile: Boolean = false,
-    navigateToSettings: () -> Unit = {},
+    navigateToSetting: () -> Unit = {},
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {},
@@ -103,7 +103,7 @@ fun InventoryTopAppBar(
                     } else {
                         Toast.makeText(context, "This feature is disabled in the settings", Toast.LENGTH_LONG).show()
                     }
-                                     },
+                },
                     modifier = Modifier) {
                     Icon(
                         imageVector = Filled.Share,
@@ -112,8 +112,8 @@ fun InventoryTopAppBar(
                     )
                 }
             }
-            if (settings) {
-                IconButton(onClick = navigateToSettings,
+            if (setting) {
+                IconButton(onClick = navigateToSetting,
                     modifier = Modifier) {
                     Icon(
                         imageVector = Filled.Settings,

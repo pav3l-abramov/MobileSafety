@@ -54,9 +54,9 @@ import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.AppViewModelProvider
-import com.example.inventory.ui.item.formatedPrice
+import com.example.inventory.ui.item.itemEntry.formatedPrice
 import com.example.inventory.ui.navigation.NavigationDestination
-import com.example.inventory.ui.settings.SettingsViewModel
+import com.example.inventory.ui.setting.SettingViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 
 object HomeDestination : NavigationDestination {
@@ -72,11 +72,11 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
-    navigateToSettings: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
+    navigateToSetting: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    settingsViewModel: SettingsViewModel
+    settingViewModel: SettingViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val homeUiState by viewModel.homeUiState.collectAsState()
@@ -87,8 +87,8 @@ fun HomeScreen(
             InventoryTopAppBar(
                 title = stringResource(HomeDestination.titleRes),
                 canNavigateBack = false,
-                settings = true,
-                navigateToSettings = navigateToSettings,
+                setting = true,
+                navigateToSetting = navigateToSetting,
                 scrollBehavior = scrollBehavior
             )
         },
@@ -111,7 +111,7 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            settings = settingsViewModel
+            setting = settingViewModel
         )
     }
 }
@@ -121,7 +121,7 @@ private fun HomeBody(
     itemList: List<Item>,
     onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    settings: SettingsViewModel
+    setting: SettingViewModel
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -138,7 +138,7 @@ private fun HomeBody(
                 itemList = itemList,
                 onItemClick = { onItemClick(it.id) },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
-                settings = settings
+                setting = setting
             )
         }
     }
@@ -146,23 +146,22 @@ private fun HomeBody(
 
 @Composable
 private fun InventoryList(
-    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier, settings: SettingsViewModel
+    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier, setting: SettingViewModel
 ) {
-    val hideSensitiveData = settings.getBoolPref("hideSensitiveData")
+    val hideSensitiveData = setting.getBoolPref("hideSensitiveData")
     LazyColumn(modifier = modifier) {
         items(items = itemList, key = { it.id }) { item ->
             InventoryItem(item = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) },
-                hideSensitiveData = hideSensitiveData)
+                    .clickable { onItemClick(item) })
+
         }
     }
 }
-
 @Composable
 private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier, hideSensitiveData: Boolean
+    item: Item, modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
@@ -176,7 +175,7 @@ private fun InventoryItem(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = item.name + " (" + if(hideSensitiveData) { "*".repeat(item.supplierName.length) } else { item.supplierName } + ")",
+                    text = item.name,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
@@ -185,19 +184,11 @@ private fun InventoryItem(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.in_stock, item.quantity),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = if(hideSensitiveData) { "*".repeat(item.supplierEmail.length) } else { item.supplierEmail },
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+            Text(
+                text = stringResource(R.string.in_stock, item.quantity),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
+

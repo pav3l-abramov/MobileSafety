@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.item.itemDetails
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.system.Os.close
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -33,57 +32,49 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.security.crypto.EncryptedFile
-import com.example.inventory.Events
+import com.example.inventory.directShare.Events
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.MainActivity
-import com.example.inventory.MyFragmentNavigation
+import com.example.inventory.directShare.MyFragmentNavigation
 import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.data.MethodOfCreation
 import com.example.inventory.ui.AppViewModelProvider
+import com.example.inventory.ui.item.itemEntry.formatedPrice
+import com.example.inventory.ui.item.itemEntry.toItem
 import com.example.inventory.ui.navigation.NavigationDestination
-import com.example.inventory.ui.settings.SettingsUiState
-import com.example.inventory.ui.settings.SettingsViewModel
+import com.example.inventory.ui.setting.SettingViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 
@@ -94,12 +85,6 @@ object ItemDetailsDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
-private fun createFileIntent(itemName:String) = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-    addCategory(Intent.CATEGORY_OPENABLE)
-    type = "application/json"
-    putExtra(Intent.EXTRA_TITLE, "$itemName.json")
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetailsScreen(
@@ -107,11 +92,10 @@ fun ItemDetailsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    settingsViewModel: SettingsViewModel
+    settingViewModel: SettingViewModel
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-
     val activity = LocalContext.current as MainActivity
     var textToShare = ""
     val navigationEventsObserver = Events.EventObserver { event ->
@@ -130,7 +114,7 @@ fun ItemDetailsScreen(
                 title = stringResource(ItemDetailsDestination.titleRes),
                 canNavigateBack = true,
                 showShareButton = true,
-                canShare = settingsViewModel.getBoolPref("allowSharingData"),
+                canShare = settingViewModel.getBoolPref("allowSharingData"),
                 navigateUp = navigateBack,
                 viewModel = viewModel
             )
@@ -149,7 +133,7 @@ fun ItemDetailsScreen(
         }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState = uiState.value, //ItemDetailsUiState(),
+            itemDetailsUiState = uiState.value,
             onSellItem = { viewModel.reduceQuantityByOne() },
             onDelete = {
                 coroutineScope.launch {
@@ -160,8 +144,8 @@ fun ItemDetailsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
-            settings = settingsViewModel,
-            toEncrypt = settingsViewModel::encryptFile
+            setting = settingViewModel,
+            toEncrypt = settingViewModel::encryptFile
         )
     }
 }
@@ -172,24 +156,25 @@ private fun ItemDetailsBody(
     onSellItem: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
-    settings: SettingsViewModel,
+    setting: SettingViewModel,
     toEncrypt: (File) -> EncryptedFile?
 ) {
     val context = LocalContext.current
     val resultLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result->
-        if (result.resultCode == RESULT_OK){
-            result.data?.data?.also {uri ->
-                val cacheFile = File(context.cacheDir,"temp.json")
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.also { uri ->
+                val cacheFile = File(context.cacheDir, "temp.json")
                 val encryptedFile = toEncrypt(cacheFile)!!
                 encryptedFile.openFileOutput().apply {
                     write(Json.encodeToString(itemDetailsUiState.itemDetails).toByteArray())
                     close()
                 }
 
-                context.contentResolver.openFileDescriptor(uri,"w")?.use {descriptor->
-                    FileOutputStream(descriptor.fileDescriptor).use { output->
-                        cacheFile.inputStream().use{input->
+                context.contentResolver.openFileDescriptor(uri, "w")?.use { descriptor ->
+                    FileOutputStream(descriptor.fileDescriptor).use { output ->
+                        cacheFile.inputStream().use { input ->
                             input.copyTo(output)
                             input.close()
                         }
@@ -200,7 +185,6 @@ private fun ItemDetailsBody(
             }
         }
     }
-    
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -210,7 +194,7 @@ private fun ItemDetailsBody(
         ItemDetails(
             item = itemDetailsUiState.itemDetails.toItem(),
             modifier = Modifier.fillMaxWidth(),
-            settings = settings
+            setting = setting
         )
         Button(
             onClick = onSellItem,
@@ -242,16 +226,22 @@ private fun ItemDetailsBody(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.small
         ) {
-            Text("Save as file")
+            Text("Save json")
         }
     }
 }
 
+private fun createFileIntent(itemName: String) = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+    addCategory(Intent.CATEGORY_OPENABLE)
+    type = "application/json"
+    putExtra(Intent.EXTRA_TITLE, "$itemName.json")
+}
+
 @Composable
 fun ItemDetails(
-    item: Item, modifier: Modifier = Modifier, settings: SettingsViewModel
+    item: Item, modifier: Modifier = Modifier,
+    setting: SettingViewModel
 ) {
-    val settingsState = remember { mutableStateOf(settings.settingsUiState) }
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -294,9 +284,7 @@ fun ItemDetails(
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 ),
-                //hide = settingsState.value.hideSensitiveData
-                //hide = settings.settingsUiState.hideSensitiveData
-                hide = settings.getBoolPref("hideSensitiveData")
+                hide = setting.getBoolPref("hideSensitiveData")
             )
             ItemDetailsRow(
                 labelResID = R.string.supplier_email,
@@ -304,9 +292,7 @@ fun ItemDetails(
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 ),
-                //hide = settingsState.value.hideSensitiveData
-                //hide = settings.settingsUiState.hideSensitiveData
-                hide = settings.getBoolPref("hideSensitiveData")
+                hide = setting.getBoolPref("hideSensitiveData")
             )
             ItemDetailsRow(
                 labelResID = R.string.supplier_phone,
@@ -314,13 +300,19 @@ fun ItemDetails(
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 ),
-                //hide = settingsState.value.hideSensitiveData
-                //hide = settings.settingsUiState.hideSensitiveData
-                hide = settings.getBoolPref("hideSensitiveData")
+                hide = setting.getBoolPref("hideSensitiveData")
+            )
+            ItemDetailsRow(
+                labelResID = R.string.additional_number,
+                itemDetail = item.additionalNumber,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                ),
+                hide = setting.getBoolPref("hideSensitiveData")
             )
             ItemDetailsRow(
                 labelResID = R.string.method_of_creation,
-                itemDetail = if (item.methodOfCreation == MethodOfCreation.MANUAL) { "manual filling" } else { "from file" },
+                itemDetail = if (item.methodOfCreation == MethodOfCreation.MANUAL) { "manual" } else { "file" },
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
@@ -366,3 +358,4 @@ private fun DeleteConfirmationDialog(
             }
         })
 }
+

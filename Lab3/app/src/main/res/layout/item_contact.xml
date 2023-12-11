@@ -12,5 +12,5 @@
     android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
     android:paddingBottom="@dimen/margin_tiny"
     android:textColor="@android:color/black"
-    tools:drawableStart="@drawable/logo_avatar"
+    tools:drawableStart="@android:color/black"
     tools:text="Taro" />

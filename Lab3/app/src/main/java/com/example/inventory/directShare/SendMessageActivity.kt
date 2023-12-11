@@ -1,4 +1,4 @@
-package com.example.inventory
+package com.example.inventory.directShare
 
 import android.app.Activity
 import android.content.Intent
@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.example.inventory.R
 
-/**
- * Provides the UI for sharing a text with a [Contact].
- */
 class SendMessageActivity : Activity() {
 
     /**
@@ -117,15 +115,6 @@ class SendMessageActivity : Activity() {
         }
         textMessageBody.text = textToShare
     }
-
-//    /**
-//     * Delegates selection of a {@Contact} to [SelectContactActivity].
-//     */
-//    private fun selectContact() {
-//        val intent = Intent(this, SelectContactActivity::class.java)
-//        intent.action = SelectContactActivity.ACTION_SELECT_CONTACT
-//        startActivityForResult(intent, requestSelectContact)
-//    }
 
     /**
      * Pretends to send the text to the contact. This only shows a dummy message.
