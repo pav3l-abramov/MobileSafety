@@ -25,10 +25,10 @@ class SettingViewModel(private val app: Application) : ViewModel() {
     )
 
     var settingUiState by mutableStateOf( SettingUiState(
-        defaultSupplier = sharedPreferences.getString("defaultSupplier", "DefaultSupplier")!!,
+        defaultSupplier = sharedPreferences.getString("defaultSupplier", "Default Supplier")!!,
         defaultEmail = sharedPreferences.getString("defaultEmail", "example@gmail.com")!!,
         defaultPhone = sharedPreferences.getString("defaultPhone", "88005553535")!!,
-        defaultAdditionalNumber = sharedPreferences.getString("defaultAdditionalNumber", "555555")!!,
+        defaultAdditionalNumber = sharedPreferences.getString("defaultAdditionalNumber", "55555")!!,
         useDefaultValues = sharedPreferences.getBoolean("useDefaultValues", false),
         hideSensitiveData = sharedPreferences.getBoolean("hideSensitiveData", false),
         allowSharingData = sharedPreferences.getBoolean("allowSharingData", false)))
@@ -50,10 +50,10 @@ class SettingViewModel(private val app: Application) : ViewModel() {
         if (sharedPreferences.contains("defaultSupplier")) return
 
         val editor = sharedPreferences.edit()
-        editor.putString("defaultSupplier", "DefaultSupplier").apply()
+        editor.putString("defaultSupplier", "Default Supplier").apply()
         editor.putString("defaultEmail", "example@gmail.com").apply()
         editor.putString("defaultPhone", "88005553535").apply()
-        editor.putString("defaultAdditionalNumber", "555555").apply()
+        editor.putString("defaultAdditionalNumber", "55555").apply()
         editor.putBoolean("useDefaultValues", false).apply()
         editor.putBoolean("hideSensitiveData", false).apply()
         editor.putBoolean("allowSharingData", false).apply()
@@ -88,7 +88,7 @@ class SettingViewModel(private val app: Application) : ViewModel() {
     fun validatePhone(uiState: SettingUiState = settingUiState): Boolean {
         return with(uiState) {
             defaultPhone.isBlank() || (Patterns.PHONE.matcher(defaultPhone).matches()
-                    && defaultPhone.length >= 5)
+                    && defaultPhone.length >= 11)
         }
     }
     fun validateAdditionalNumber(uiState: SettingUiState = settingUiState): Boolean {

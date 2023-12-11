@@ -71,7 +71,8 @@ fun ItemEditScreen(
                 }
             },
             modifier = Modifier.padding(innerPadding),
-            setting = settingViewModel
+            setting = settingViewModel,
+            useDefaults=false
         )
     }
 }

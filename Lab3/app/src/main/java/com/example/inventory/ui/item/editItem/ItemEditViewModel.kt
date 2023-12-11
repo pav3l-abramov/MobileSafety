@@ -75,7 +75,7 @@ class ItemEditViewModel(
     private fun validatePhone(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
             supplierPhone.isBlank() || (Patterns.PHONE.matcher(supplierPhone).matches()
-                    && supplierPhone.length >= 5)
+                    && supplierPhone.length >= 11)
         }
     }
 

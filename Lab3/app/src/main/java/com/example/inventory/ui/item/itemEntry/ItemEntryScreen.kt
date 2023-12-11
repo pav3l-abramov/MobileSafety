@@ -17,6 +17,7 @@
 package com.example.inventory.ui.item.itemEntry
 
 import android.app.Activity
+import android.util.Log
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,18 +76,18 @@ fun ItemEntryScreen(
     settingViewModel: SettingViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
-
     val context = LocalContext.current
     val resultLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts
-            .StartActivityForResult()) { result->
+            .StartActivityForResult()
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.also { uri ->
                 val cacheFile = File(context.cacheDir, "temp.json")
 
-                cacheFile.outputStream().use { output->
-                    context.contentResolver.openFileDescriptor(uri,"r")?.use { descriptor->
-                        FileInputStream(descriptor.fileDescriptor).use { input->
+                cacheFile.outputStream().use { output ->
+                    context.contentResolver.openFileDescriptor(uri, "r")?.use { descriptor ->
+                        FileInputStream(descriptor.fileDescriptor).use { input ->
                             input.copyTo(output)
                             input.close()
                         }
@@ -94,8 +96,9 @@ fun ItemEntryScreen(
                 }
 
                 val encryptedFile = settingViewModel.encryptFile(cacheFile)
-                encryptedFile.openFileInput().use { input->
-                    val receivedDetails = Json.decodeFromString<ItemDetails>(input.bufferedReader().readText())
+                encryptedFile.openFileInput().use { input ->
+                    val receivedDetails =
+                        Json.decodeFromString<ItemDetails>(input.bufferedReader().readText())
                     receivedDetails.methodOfCreation = MethodOfCreation.FILE
                     viewModel.updateUiState(
                         receivedDetails
@@ -213,7 +216,7 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = itemDetails.price.isEmpty()||!(itemDetails.price.isNotBlank() && itemDetails.price.toDoubleOrNull() != null)
+            isError = itemDetails.price.isEmpty() || !(itemDetails.price.isNotBlank() && itemDetails.price.toDoubleOrNull() != null)
         )
         OutlinedTextField(
             value = itemDetails.quantity,
@@ -228,11 +231,32 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = itemDetails.quantity.isEmpty()||!(itemDetails.quantity.isNotBlank() && itemDetails.quantity.all { it in '0'..'9' })
+            isError = itemDetails.quantity.isEmpty() || !(itemDetails.quantity.isNotBlank() && itemDetails.quantity.all { it in '0'..'9' })
         )
-        val supplierName = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultSupplier")} else {itemDetails.supplierName}) }
+        val supplierName = remember {
+            mutableStateOf(
+                if (useDefaults && useDefaultValues) {
+                    setting.getStringPref("defaultSupplier")
+                } else {
+                    itemDetails.supplierName
+                }
+            )
+        }
+        Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useDefaultValues.toString())
+        viewModel.checkFlag(
+            useDefaultValues,
+            setting.getStringPref("defaultSupplier"),
+            setting.getStringPref("defaultEmail"),
+            setting.getStringPref("defaultPhone"),
+            setting.getStringPref("defaultAdditionalNumber")
+        )
+
         OutlinedTextField(
-            value = if (useDefaults && useDefaultValues) { supplierName.value } else { itemDetails.supplierName },
+            value = if (useDefaults && useDefaultValues) {
+                supplierName.value
+            } else {
+                itemDetails.supplierName
+            },
             onValueChange = {
                 supplierName.value = it
                 onValueChange(itemDetails.copy(supplierName = it))
@@ -248,9 +272,21 @@ fun ItemInputForm(
             singleLine = true,
             isError = itemDetails.supplierName.isEmpty()
         )
-        val supplierEmail = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultEmail")} else {itemDetails.supplierEmail}) }
+        val supplierEmail = remember {
+            mutableStateOf(
+                if (useDefaults && useDefaultValues) {
+                    setting.getStringPref("defaultEmail")
+                } else {
+                    itemDetails.supplierEmail
+                }
+            )
+        }
         OutlinedTextField(
-            value = if (useDefaults && useDefaultValues) { supplierEmail.value } else { itemDetails.supplierEmail },
+            value = if (useDefaults && useDefaultValues) {
+                supplierEmail.value
+            } else {
+                itemDetails.supplierEmail
+            },
             onValueChange = {
                 supplierEmail.value = it
                 onValueChange(itemDetails.copy(supplierEmail = it))
@@ -264,11 +300,25 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = !(itemDetails.supplierEmail.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(itemDetails.supplierEmail).matches())
+            isError = !(itemDetails.supplierEmail.isEmpty() || Patterns.EMAIL_ADDRESS.matcher(
+                itemDetails.supplierEmail
+            ).matches())
         )
-        val supplierPhone = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultPhone")} else {itemDetails.supplierPhone}) }
+        val supplierPhone = remember {
+            mutableStateOf(
+                if (useDefaults && useDefaultValues) {
+                    setting.getStringPref("defaultPhone")
+                } else {
+                    itemDetails.supplierPhone
+                }
+            )
+        }
         OutlinedTextField(
-            value = if (useDefaults && useDefaultValues) { supplierPhone.value } else { itemDetails.supplierPhone },
+            value = if (useDefaults && useDefaultValues) {
+                supplierPhone.value
+            } else {
+                itemDetails.supplierPhone
+            },
             onValueChange = {
                 supplierPhone.value = it
                 onValueChange(itemDetails.copy(supplierPhone = it))
@@ -283,11 +333,24 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone).matches()  && itemDetails.supplierPhone.length  >= 5))
+            isError = !(itemDetails.supplierPhone.isEmpty() || (Patterns.PHONE.matcher(itemDetails.supplierPhone)
+                .matches() && itemDetails.supplierPhone.length >= 11))
         )
-        val additionalNumber = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultAdditionalNumber")} else {itemDetails.additionalNumber}) }
+        val additionalNumber = remember {
+            mutableStateOf(
+                if (useDefaults && useDefaultValues) {
+                    setting.getStringPref("defaultAdditionalNumber")
+                } else {
+                    itemDetails.additionalNumber
+                }
+            )
+        }
         OutlinedTextField(
-            value = if (useDefaults && useDefaultValues) { additionalNumber.value } else { itemDetails.additionalNumber },
+            value = if (useDefaults && useDefaultValues) {
+                additionalNumber.value
+            } else {
+                itemDetails.additionalNumber
+            },
             onValueChange = {
                 additionalNumber.value = it
                 onValueChange(itemDetails.copy(additionalNumber = it))
@@ -302,7 +365,9 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = !(itemDetails.additionalNumber.isEmpty() || (Patterns.PHONE.matcher(itemDetails.additionalNumber).matches()  && itemDetails.additionalNumber.length  >= 5))
+            isError = !(itemDetails.additionalNumber.isEmpty() || (Patterns.PHONE.matcher(
+                itemDetails.additionalNumber
+            ).matches() && itemDetails.additionalNumber.length >= 5))
         )
 
         if (enabled) {
