@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.inventory.ui.item.itemEntry.ItemDetails
 import java.io.File
 
 class SettingViewModel(private val app: Application) : ViewModel() {
@@ -17,16 +18,17 @@ class SettingViewModel(private val app: Application) : ViewModel() {
         .build()
     private val sharedPreferences = EncryptedSharedPreferences.create(
         app,
-        "settings",
+        "setting",
         masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    var settingsUiState by mutableStateOf( SettingsUiState(
-        defaultSupplier = sharedPreferences.getString("defaultSupplier", "No name")!!,
-        defaultEmail = sharedPreferences.getString("defaultEmail", "example@ex.com")!!,
-        defaultPhone = sharedPreferences.getString("defaultPhone", "+71234567890")!!,
+    var settingUiState by mutableStateOf( SettingUiState(
+        defaultSupplier = sharedPreferences.getString("defaultSupplier", "DefaultSupplier")!!,
+        defaultEmail = sharedPreferences.getString("defaultEmail", "example@gmail.com")!!,
+        defaultPhone = sharedPreferences.getString("defaultPhone", "88005553535")!!,
+        defaultAdditionalNumber = sharedPreferences.getString("defaultAdditionalNumber", "555555")!!,
         useDefaultValues = sharedPreferences.getBoolean("useDefaultValues", false),
         hideSensitiveData = sharedPreferences.getBoolean("hideSensitiveData", false),
         allowSharingData = sharedPreferences.getBoolean("allowSharingData", false)))
@@ -48,54 +50,63 @@ class SettingViewModel(private val app: Application) : ViewModel() {
         if (sharedPreferences.contains("defaultSupplier")) return
 
         val editor = sharedPreferences.edit()
-        editor.putString("defaultSupplier", "Дефолтный поставщик").apply()
-        editor.putString("defaultEmail", "mail@mail.com").apply()
-        editor.putString("defaultPhone", "+79045011111").apply()
+        editor.putString("defaultSupplier", "DefaultSupplier").apply()
+        editor.putString("defaultEmail", "example@gmail.com").apply()
+        editor.putString("defaultPhone", "88005553535").apply()
+        editor.putString("defaultAdditionalNumber", "555555").apply()
         editor.putBoolean("useDefaultValues", false).apply()
         editor.putBoolean("hideSensitiveData", false).apply()
         editor.putBoolean("allowSharingData", false).apply()
         editor.apply()
     }
 
-    fun updateSettingsUiState(settings: SettingsUiState) {
-        settingsUiState =
-            SettingsUiState(
-                defaultSupplier = settings.defaultSupplier,
-                defaultEmail = settings.defaultEmail,
-                defaultPhone = settings.defaultPhone,
-                useDefaultValues = settings.useDefaultValues,
-                hideSensitiveData = settings.hideSensitiveData,
-                allowSharingData = settings.allowSharingData
+    fun updateSettingsUiState(setting: SettingUiState) {
+        settingUiState =
+            SettingUiState(
+                defaultSupplier = setting.defaultSupplier,
+                defaultEmail = setting.defaultEmail,
+                defaultPhone = setting.defaultPhone,
+                defaultAdditionalNumber = setting.defaultAdditionalNumber,
+                useDefaultValues = setting.useDefaultValues,
+                hideSensitiveData = setting.hideSensitiveData,
+                allowSharingData = setting.allowSharingData
             )
     }
 
-    fun validateSupplier(uiState: SettingsUiState = settingsUiState): Boolean {
+    fun validateSupplier(uiState: SettingUiState = settingUiState): Boolean {
         return with(uiState) {
             defaultSupplier.isNotBlank()
         }
     }
 
-    fun validateEmail(uiState: SettingsUiState = settingsUiState): Boolean {
+    fun validateEmail(uiState: SettingUiState = settingUiState): Boolean {
         return with(uiState) {
             defaultEmail.isBlank() || Patterns.EMAIL_ADDRESS.matcher(defaultEmail).matches()
         }
     }
 
-    fun validatePhone(uiState: SettingsUiState = settingsUiState): Boolean {
+    fun validatePhone(uiState: SettingUiState = settingUiState): Boolean {
         return with(uiState) {
             defaultPhone.isBlank() || (Patterns.PHONE.matcher(defaultPhone).matches()
-                    && defaultPhone.startsWith("+7") && defaultPhone.length == 12)
+                    && defaultPhone.length >= 5)
+        }
+    }
+    fun validateAdditionalNumber(uiState: SettingUiState = settingUiState): Boolean {
+        return with(uiState) {
+            defaultAdditionalNumber.isBlank() || (Patterns.PHONE.matcher(defaultAdditionalNumber).matches()
+                    && defaultAdditionalNumber.length >= 5)
         }
     }
 
     fun saveSettings() {
         sharedPreferences.edit()
-            .putString("defaultSupplier",settingsUiState.defaultSupplier)
-            .putString("defaultEmail",settingsUiState.defaultEmail)
-            .putString("defaultPhone",settingsUiState.defaultPhone)
-            .putBoolean("useDefaultValues", settingsUiState.useDefaultValues)
-            .putBoolean("hideSensitiveData", settingsUiState.hideSensitiveData)
-            .putBoolean("allowSharingData", settingsUiState.allowSharingData).apply()
+            .putString("defaultSupplier",settingUiState.defaultSupplier)
+            .putString("defaultEmail",settingUiState.defaultEmail)
+            .putString("defaultPhone",settingUiState.defaultPhone)
+            .putString("defaultAdditionalNumber",settingUiState.defaultAdditionalNumber)
+            .putBoolean("useDefaultValues", settingUiState.useDefaultValues)
+            .putBoolean("hideSensitiveData", settingUiState.hideSensitiveData)
+            .putBoolean("allowSharingData", settingUiState.allowSharingData).apply()
     }
 
     fun encryptFile(file: File) = EncryptedFile.Builder(
@@ -106,10 +117,11 @@ class SettingViewModel(private val app: Application) : ViewModel() {
     ).build()
 }
 
-data class SettingsUiState(
+data class SettingUiState(
     val defaultSupplier: String = "",
     val defaultEmail: String = "",
     val defaultPhone: String = "",
+    val defaultAdditionalNumber: String = "",
     val useDefaultValues: Boolean = false,
     val hideSensitiveData: Boolean = false,
     val allowSharingData: Boolean = false

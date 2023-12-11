@@ -97,7 +97,9 @@ class ItemEditViewModel(
     }
 
     suspend fun updateItem() {
-        if (validateInput(itemUiState.itemDetails) && validateEmail(itemUiState.itemDetails)) {
+        if (validateInput(itemUiState.itemDetails) && validateQuantity(itemUiState.itemDetails)
+            && validatePrice(itemUiState.itemDetails) && validateEmail(itemUiState.itemDetails)
+            && validatePhone(itemUiState.itemDetails)) {
             itemsRepository.updateItem(itemUiState.itemDetails.toItem())
         }
     }

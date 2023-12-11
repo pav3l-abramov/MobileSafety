@@ -45,7 +45,7 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      */
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails))
+            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails) && validateEmail(itemDetails) && validatePhone(itemDetails)&& validateAdditionalNumber(itemDetails))
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {

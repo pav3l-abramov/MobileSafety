@@ -113,8 +113,9 @@ fun ItemEntryScreen(
             InventoryTopAppBar(
                 title = stringResource(ItemEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                canShare = false,
-                navigateUp = onNavigateUp
+                navigateUp = onNavigateUp,
+                uploadFile = true,
+                intentResultLauncher = resultLauncher
             )
         }
     ) { innerPadding ->
@@ -273,6 +274,7 @@ fun ItemInputForm(
                 onValueChange(itemDetails.copy(supplierPhone = it))
             },
             label = { Text(stringResource(R.string.supplier_phone)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -285,12 +287,13 @@ fun ItemInputForm(
         )
         val additionalNumber = remember { mutableStateOf( if (useDefaults && useDefaultValues) { setting.getStringPref("defaultAdditionalNumber")} else {itemDetails.additionalNumber}) }
         OutlinedTextField(
-            value = if (useDefaults && useDefaultValues) { supplierPhone.value } else { itemDetails.additionalNumber },
+            value = if (useDefaults && useDefaultValues) { additionalNumber.value } else { itemDetails.additionalNumber },
             onValueChange = {
                 additionalNumber.value = it
                 onValueChange(itemDetails.copy(additionalNumber = it))
             },
             label = { Text(stringResource(R.string.additional_number)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,

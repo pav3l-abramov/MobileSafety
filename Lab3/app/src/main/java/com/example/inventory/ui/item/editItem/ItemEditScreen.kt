@@ -56,7 +56,6 @@ fun ItemEditScreen(
             InventoryTopAppBar(
                 title = stringResource(ItemEditDestination.titleRes),
                 canNavigateBack = true,
-                canShare = false,
                 navigateUp = onNavigateUp
             )
         },

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -66,13 +67,13 @@ fun SettingScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            val field1 = remember { mutableStateOf(viewModel.settingsUiState.defaultSupplier) }
+            val field1 = remember { mutableStateOf(viewModel.settingUiState.defaultSupplier) }
             OutlinedTextField(
                 value = field1.value,
                 //onValueChange = { onValueChange(itemDetails.copy(name = it)) },
                 onValueChange = {
                     field1.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(defaultSupplier = it)) },
+                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultSupplier = it)) },
                 label = { Text(stringResource(R.string.default_supplier_name)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -84,12 +85,12 @@ fun SettingScreen(
                 singleLine = true,
                 isError = !viewModel.validateSupplier()
             )
-            val field2 = remember { mutableStateOf(viewModel.settingsUiState.defaultEmail) }
+            val field2 = remember { mutableStateOf(viewModel.settingUiState.defaultEmail) }
             OutlinedTextField(
                 value = field2.value,
                 onValueChange = {
                     field2.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(defaultEmail = it)) },
+                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultEmail = it)) },
                 label = { Text(stringResource(R.string.default_supplier_email)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -101,12 +102,12 @@ fun SettingScreen(
                 singleLine = true,
                 isError = !viewModel.validateEmail()
             )
-            val field3 = remember { mutableStateOf(viewModel.settingsUiState.defaultPhone) }
+            val field3 = remember { mutableStateOf(viewModel.settingUiState.defaultPhone) }
             OutlinedTextField(
                 value = field3.value,
                 onValueChange = {
                     field3.value = it
-                    viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(defaultPhone = it)) },
+                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultPhone = it)) },
                 label = { Text(stringResource(R.string.default_supplier_phone)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -118,18 +119,36 @@ fun SettingScreen(
                 singleLine = true,
                 isError = !viewModel.validatePhone()
             )
+            val field4 = remember { mutableStateOf(viewModel.settingUiState.defaultAdditionalNumber) }
+            OutlinedTextField(
+                value = field4.value,
+                onValueChange = {
+                    field4.value = it
+                    viewModel.updateSettingsUiState(viewModel.settingUiState.copy(defaultAdditionalNumber = it)) },
+                label = { Text(stringResource(R.string.default_additional_number)) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = true,
+                singleLine = true,
+                isError = !viewModel.validateAdditionalNumber()
+            )
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "Substitute default values", style = TextStyle(fontSize = 18.sp,
                     fontFamily = FontFamily.SansSerif)
                 )
                 Spacer(Modifier.weight(1f))
-                val checkedState = remember { mutableStateOf(viewModel.settingsUiState.useDefaultValues) }
-                Switch(
+                val checkedState = remember { mutableStateOf(viewModel.settingUiState.useDefaultValues) }
+                Checkbox(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(useDefaultValues = it))
-                        Log.d("aaa", viewModel.settingsUiState.toString())
+                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(useDefaultValues = it))
+                        Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
             }
@@ -138,13 +157,13 @@ fun SettingScreen(
                     fontFamily = FontFamily.SansSerif)
                 )
                 Spacer(Modifier.weight(1f))
-                val checkedState = remember { mutableStateOf(viewModel.settingsUiState.hideSensitiveData) }
-                Switch(
+                val checkedState = remember { mutableStateOf(viewModel.settingUiState.hideSensitiveData) }
+                Checkbox(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(hideSensitiveData = it))
-                        Log.d("aaa", viewModel.settingsUiState.toString())
+                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(hideSensitiveData = it))
+                        Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
             }
@@ -153,13 +172,13 @@ fun SettingScreen(
                     fontFamily = FontFamily.SansSerif)
                 )
                 Spacer(Modifier.weight(1f))
-                val checkedState = remember { mutableStateOf(viewModel.settingsUiState.allowSharingData) }
-                Switch(
+                val checkedState = remember { mutableStateOf(viewModel.settingUiState.allowSharingData) }
+                Checkbox(
                     checked = checkedState.value,
                     onCheckedChange = {
                         checkedState.value = it
-                        viewModel.updateSettingsUiState(viewModel.settingsUiState.copy(allowSharingData = it))
-                        Log.d("aaa", viewModel.settingsUiState.toString())
+                        viewModel.updateSettingsUiState(viewModel.settingUiState.copy(allowSharingData = it))
+                        Log.d("aaa", viewModel.settingUiState.toString())
                     }
                 )
             }

@@ -70,9 +70,9 @@ fun InventoryTopAppBar(
     canNavigateBack: Boolean,
     showShareButton: Boolean = false,
     canShare: Boolean = false,
-    settings: Boolean = false,
+    setting: Boolean = false,
     uploadFile: Boolean = false,
-    navigateToSettings: () -> Unit = {},
+    navigateToSetting: () -> Unit = {},
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {},
@@ -112,8 +112,8 @@ fun InventoryTopAppBar(
                     )
                 }
             }
-            if (settings) {
-                IconButton(onClick = navigateToSettings,
+            if (setting) {
+                IconButton(onClick = navigateToSetting,
                     modifier = Modifier) {
                     Icon(
                         imageVector = Filled.Settings,

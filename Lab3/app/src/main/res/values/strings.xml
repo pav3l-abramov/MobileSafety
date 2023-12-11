@@ -37,8 +37,10 @@
     <string name="required_fields">*required fields</string>
 
     <string name="supplier_name_req">Supplier Name*</string>
+    <string name="supplier_name">Supplier Name</string>
     <string name="supplier_email">Supplier Email</string>
     <string name="supplier_phone">Supplier Phone</string>
+    <string name="method_of_creation">Method of Creation</string>
 
     <string name="name">Name: </string>
     <string name="price_">Price: </string>
@@ -61,6 +63,7 @@
 
     <string name="setting_title">Setting</string>
     <string name="additional_number">Additional number</string>
+    <string name="default_additional_number">Default additional number</string>
     <string name="default_supplier_name">Default Supplier Name</string>
     <string name="default_supplier_email">Default Supplier Email</string>
     <string name="default_supplier_phone">Default Supplier Phone</string>

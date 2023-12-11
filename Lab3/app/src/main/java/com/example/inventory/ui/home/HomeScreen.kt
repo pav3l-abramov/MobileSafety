@@ -87,8 +87,8 @@ fun HomeScreen(
             InventoryTopAppBar(
                 title = stringResource(HomeDestination.titleRes),
                 canNavigateBack = false,
-                settings = true,
-                navigateToSettings = navigateToSetting,
+                setting = true,
+                navigateToSetting = navigateToSetting,
                 scrollBehavior = scrollBehavior
             )
         },
@@ -154,17 +154,15 @@ private fun InventoryList(
             InventoryItem(item = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) },
-                hideSensitiveData = hideSensitiveData)
+                    .clickable { onItemClick(item) })
+
         }
     }
 }
-
 @Composable
 private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier, hideSensitiveData: Boolean
+    item: Item, modifier: Modifier = Modifier
 ) {
-
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -16,6 +16,11 @@
 
 package com.example.inventory.ui.item.itemDetails
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,12 +58,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.security.crypto.EncryptedFile
 import com.example.inventory.directShare.Events
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.MainActivity
 import com.example.inventory.directShare.MyFragmentNavigation
 import com.example.inventory.R
 import com.example.inventory.data.Item
+import com.example.inventory.data.MethodOfCreation
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.item.itemEntry.formatedPrice
 import com.example.inventory.ui.item.itemEntry.toItem
@@ -66,6 +73,10 @@ import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.setting.SettingViewModel
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileOutputStream
 
 object ItemDetailsDestination : NavigationDestination {
     override val route = "item_details"
@@ -102,7 +113,7 @@ fun ItemDetailsScreen(
             InventoryTopAppBar(
                 title = stringResource(ItemDetailsDestination.titleRes),
                 canNavigateBack = true,
-                canShare = true,
+                showShareButton = true,
                 navigateUp = navigateBack,
                 viewModel = viewModel
             )
@@ -121,16 +132,19 @@ fun ItemDetailsScreen(
         }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState =  uiState.value,
-            onSellItem = {viewModel.reduceQuantityByOne() },
+            itemDetailsUiState = uiState.value,
+            onSellItem = { viewModel.reduceQuantityByOne() },
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteItem()
                     navigateBack()
-                }},
+                }
+            },
             modifier = Modifier
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            setting = settingViewModel,
+            toEncrypt = settingViewModel::encryptFile
         )
     }
 }
@@ -140,8 +154,36 @@ private fun ItemDetailsBody(
     itemDetailsUiState: ItemDetailsUiState,
     onSellItem: () -> Unit,
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    setting: SettingViewModel,
+    toEncrypt: (File) -> EncryptedFile?
 ) {
+    val context = LocalContext.current
+    val resultLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.data?.also { uri ->
+                val cacheFile = File(context.cacheDir, "temp.json")
+                val encryptedFile = toEncrypt(cacheFile)!!
+                encryptedFile.openFileOutput().apply {
+                    write(Json.encodeToString(itemDetailsUiState.itemDetails).toByteArray())
+                    close()
+                }
+
+                context.contentResolver.openFileDescriptor(uri, "w")?.use { descriptor ->
+                    FileOutputStream(descriptor.fileDescriptor).use { output ->
+                        cacheFile.inputStream().use { input ->
+                            input.copyTo(output)
+                            input.close()
+                        }
+                        output.close()
+                    }
+                }
+                cacheFile.delete()
+            }
+        }
+    }
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -150,7 +192,8 @@ private fun ItemDetailsBody(
 
         ItemDetails(
             item = itemDetailsUiState.itemDetails.toItem(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            setting = setting
         )
         Button(
             onClick = onSellItem,
@@ -177,12 +220,26 @@ private fun ItemDetailsBody(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
         }
+        Button(
+            onClick = { resultLauncher.launch(createFileIntent(itemDetailsUiState.itemDetails.name)) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.small
+        ) {
+            Text("Save json")
+        }
     }
+}
+
+private fun createFileIntent(itemName: String) = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+    addCategory(Intent.CATEGORY_OPENABLE)
+    type = "application/json"
+    putExtra(Intent.EXTRA_TITLE, "$itemName.json")
 }
 
 @Composable
 fun ItemDetails(
-    item: Item, modifier: Modifier = Modifier
+    item: Item, modifier: Modifier = Modifier,
+    setting: SettingViewModel
 ) {
     Card(
         modifier = modifier,
@@ -221,22 +278,40 @@ fun ItemDetails(
                 )
             )
             ItemDetailsRow(
-                labelResID = R.string.supplier_name_req,
+                labelResID = R.string.supplier_name,
                 itemDetail = item.supplierName,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
-                )
+                ),
+                hide = setting.getBoolPref("hideSensitiveData")
             )
             ItemDetailsRow(
                 labelResID = R.string.supplier_email,
                 itemDetail = item.supplierEmail,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
-                )
+                ),
+                hide = setting.getBoolPref("hideSensitiveData")
             )
             ItemDetailsRow(
                 labelResID = R.string.supplier_phone,
                 itemDetail = item.supplierPhone,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                ),
+                hide = setting.getBoolPref("hideSensitiveData")
+            )
+            ItemDetailsRow(
+                labelResID = R.string.additional_number,
+                itemDetail = item.additionalNumber,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                ),
+                hide = setting.getBoolPref("hideSensitiveData")
+            )
+            ItemDetailsRow(
+                labelResID = R.string.method_of_creation,
+                itemDetail = if (item.methodOfCreation == MethodOfCreation.MANUAL) { "manual" } else { "file" },
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
@@ -247,12 +322,17 @@ fun ItemDetails(
 
 @Composable
 private fun ItemDetailsRow(
-    @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
+    @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier,
+    hide: Boolean = false
 ) {
     Row(modifier = modifier) {
         Text(stringResource(labelResID))
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = itemDetail, fontWeight = FontWeight.Bold)
+        if(hide) {
+            Text(text = "*".repeat(itemDetail.length), fontWeight = FontWeight.Bold)
+        } else {
+            Text(text = itemDetail, fontWeight = FontWeight.Bold)
+        }
     }
 }
 
@@ -278,22 +358,3 @@ private fun DeleteConfirmationDialog(
         })
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailsScreenPreview() {
-    InventoryTheme {
-        ItemDetailsBody(
-            ItemDetailsUiState(
-                outOfStock = true,
-                itemDetails = com.example.inventory.ui.item.itemEntry.ItemDetails(
-                    1,
-                    "Pen",
-                    "$100",
-                    "10"
-                )
-            ),
-            onSellItem = {},
-            onDelete = {}
-        )
-    }
-}
