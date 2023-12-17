@@ -150,6 +150,8 @@ fun ItemEntryBody(
     setting: SettingViewModel,
     useDefaults: Boolean = false
 ) {
+
+
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large)),
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -184,6 +186,12 @@ fun ItemInputForm(
     useDefaults: Boolean = false
 ) {
     val useDefaultValues = setting.getBoolPref("useDefaultValues")
+   viewModel.checkFlag(
+       setting.getBoolPref("useDefaultValues"),
+        setting.getStringPref("defaultSupplier"),
+        setting.getStringPref("defaultEmail"),
+        setting.getStringPref("defaultPhone"),
+        setting.getStringPref("defaultAdditionalNumber"))
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -242,14 +250,11 @@ fun ItemInputForm(
                 }
             )
         }
-        Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", useDefaultValues.toString())
-        viewModel.checkFlag(
-            useDefaultValues,
-            setting.getStringPref("defaultSupplier"),
-            setting.getStringPref("defaultEmail"),
-            setting.getStringPref("defaultPhone"),
-            setting.getStringPref("defaultAdditionalNumber")
+
+        Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            setting.getBoolPref("useDefaultValues").toString()
         )
+        //Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", (useDefaultValues))
 
         OutlinedTextField(
             value = if (useDefaults && useDefaultValues) {
@@ -270,7 +275,7 @@ fun ItemInputForm(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true,
-            isError = itemDetails.supplierName.isEmpty()
+            //isError = itemDetails.supplierName.isEmpty()
         )
         val supplierEmail = remember {
             mutableStateOf(

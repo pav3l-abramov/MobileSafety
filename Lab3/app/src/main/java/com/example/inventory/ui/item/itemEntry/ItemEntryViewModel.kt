@@ -16,6 +16,7 @@
 
 package com.example.inventory.ui.item.itemEntry
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +35,7 @@ var nameeFl: String = ""
 var emailFl: String = ""
 var phoneFl: String = ""
 var addphoneFl: String = ""
-
+var r=false
 
 /**
  * ViewModel to validate and insert items in the Room database.
@@ -53,8 +54,8 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         emailFl=emailDef
         phoneFl=phoneDef
         addphoneFl=addphoneDef
-
     }
+
 
     /**
      * Holds current item ui state
@@ -139,7 +140,7 @@ data class ItemDetails(
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
-    val supplierName: String = if (checkFl) "" else nameeFl,
+    val supplierName: String = if (checkFl) "" else {nameeFl},
     val supplierEmail: String = if (checkFl) "" else emailFl,
     val supplierPhone: String = if (checkFl) "" else phoneFl,
     val additionalNumber: String = if (checkFl) "" else addphoneFl,

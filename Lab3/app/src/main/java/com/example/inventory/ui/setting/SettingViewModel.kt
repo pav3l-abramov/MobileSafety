@@ -43,7 +43,7 @@ class SettingViewModel(private val app: Application) : ViewModel() {
     }
 
     fun getBoolPref(string: String): Boolean {
-        return sharedPreferences.getBoolean(string, false)!!
+        return sharedPreferences.getBoolean(string, false)
     }
 
     private fun initializeSettings() {
