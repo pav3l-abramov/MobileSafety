@@ -1,6 +1,8 @@
 package com.example.inventory.ui.setting
 
 import android.app.Application
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import androidx.security.crypto.MasterKeys
 import com.example.inventory.ui.item.itemEntry.ItemDetails
 import java.io.File
 
@@ -126,3 +129,19 @@ data class SettingUiState(
     val hideSensitiveData: Boolean = false,
     val allowSharingData: Boolean = false
 )
+object KeyManager {
+    val DB_KEY_ALIAS = "WRITE_SOME_KEY"
+
+    val dbKeySpec = KeyGenParameterSpec.Builder(
+        DB_KEY_ALIAS,
+        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+    ).apply {
+        setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+        setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+        setKeySize(256)
+        setUserAuthenticationRequired(false)
+    }.build()
+
+    val dbKey: String
+        get() = MasterKeys.getOrCreate(dbKeySpec)
+}

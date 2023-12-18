@@ -101,4 +101,8 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
+    implementation ("net.zetetic:android-database-sqlcipher:4.5.0")
+
+    implementation("androidx.sqlite:sqlite:2.0.1")
+
 }
