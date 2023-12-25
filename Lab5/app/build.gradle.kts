@@ -1,8 +1,7 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -76,4 +75,5 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.drewnoakes:metadata-extractor:2.18.0")
+    implementation ("com.squareup.moshi:moshi:1.12.0")
 }
