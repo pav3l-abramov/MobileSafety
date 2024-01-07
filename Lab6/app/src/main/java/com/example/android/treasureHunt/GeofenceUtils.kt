@@ -17,8 +17,12 @@
 package com.example.android.treasureHunt
 
 import android.content.Context
+import com.example.android.treasureHunt.GeofencingConstants.LANDMARK_DATA
+import com.example.android.treasureHunt.GeofencingConstants.NUM_LANDMARKS
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.maps.model.LatLng
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 /**
@@ -26,6 +30,7 @@ import java.util.concurrent.TimeUnit
  */
 fun errorMessage(context: Context, errorCode: Int): String {
     val resources = context.resources
+
     return when (errorCode) {
         GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE -> resources.getString(
             R.string.geofence_not_available
@@ -40,10 +45,33 @@ fun errorMessage(context: Context, errorCode: Int): String {
     }
 }
 
+fun jsonData(context: Context) {
+
+    val jsonFile = JSONObject(context.assets.open("geofencing_lab_landmarks.json")
+        .bufferedReader().use { it.readText() })
+
+    val landmarks = jsonFile.getJSONArray("geofencing") as JSONArray
+    for (i in 0 until landmarks.length()) {
+        LANDMARK_DATA.add(
+            LandmarkData(
+                id = landmarks.getJSONObject(i).get("id").toString(),
+                hint = landmarks.getJSONObject(i).get("hint").toString(),
+                name = landmarks.getJSONObject(i).get("name").toString(),
+                latLong = LatLng((landmarks.getJSONObject(i).get("location") as JSONObject).get("latitude").toString().toDouble()
+                    ,(landmarks.getJSONObject(i).get("location") as JSONObject).get("longitude").toString().toDouble()
+                )
+            )
+        )
+    }
+    NUM_LANDMARKS = LANDMARK_DATA.size
+}
+
 /**
  * Stores latitude and longitude information along with a hint to help user find the location.
  */
-data class LandmarkDataObject(val id: String, val hint: Int, val name: Int, val latLong: LatLng)
+//data class LandmarkDataObject(val id: String, val hint: Int, val name: Int, val latLong: LatLng)
+
+data class LandmarkData(val id: String, val hint: String, val name: String, val latLong: LatLng)
 
 internal object GeofencingConstants {
 
@@ -53,33 +81,35 @@ internal object GeofencingConstants {
      */
     val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
 
-    val LANDMARK_DATA = arrayOf(
-        LandmarkDataObject(
-            "golden_gate_bridge",
-            R.string.golden_gate_bridge_hint,
-            R.string.golden_gate_bridge_location,
-            LatLng(37.819927, -122.478256)),
+    val LANDMARK_DATA = arrayListOf<LandmarkData>()
 
-        LandmarkDataObject(
-            "ferry_building",
-            R.string.ferry_building_hint,
-            R.string.ferry_building_location,
-            LatLng(37.795490, -122.394276)),
+//    val temp_landmarks = arrayListOf(
+//        LandmarkDataObject(
+//            "golden_gate_bridge",
+//            R.string.golden_gate_bridge_hint,
+//            R.string.golden_gate_bridge_location,
+//            LatLng(37.819927, -122.478256)),
+//
+//        LandmarkDataObject(
+//            "ferry_building",
+//            R.string.ferry_building_hint,
+//            R.string.ferry_building_location,
+//            LatLng(37.795490, -122.394276)),
+//
+//        LandmarkDataObject(
+//            "pier_39",
+//            R.string.pier_39_hint,
+//            R.string.pier_39_location,
+//            LatLng(37.808674, -122.409821)),
+//
+//        LandmarkDataObject(
+//           "union_square",
+//            R.string.union_square_hint,
+//            R.string.union_square_location,
+//            LatLng(37.788151, -122.407570))
+//    )
 
-        LandmarkDataObject(
-            "pier_39",
-            R.string.pier_39_hint,
-            R.string.pier_39_location,
-            LatLng(37.808674, -122.409821)),
-
-        LandmarkDataObject(
-           "union_square",
-            R.string.union_square_hint,
-            R.string.union_square_location,
-            LatLng(37.788151, -122.407570))
-    )
-
-    val NUM_LANDMARKS = LANDMARK_DATA.size
-    const val GEOFENCE_RADIUS_IN_METERS = 100f
+    var NUM_LANDMARKS = LANDMARK_DATA.size
+    const val GEOFENCE_RADIUS_IN_METERS = 20f
     const val EXTRA_GEOFENCE_INDEX = "GEOFENCE_INDEX"
 }

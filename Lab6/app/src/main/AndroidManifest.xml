@@ -15,8 +15,7 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.android.treasureHunt">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!--
         The FINE_LOCATION permission is required for geofencing functionality to work.
     -->
@@ -25,6 +24,8 @@
         The BACKGROUND_LOCATION permission is required for geofencing functionality to work on Q+
     -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -36,7 +37,8 @@
 
         <activity android:name=".HuntMainActivity"
             android:label="@string/title_activity_hunt"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

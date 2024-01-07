@@ -18,8 +18,8 @@ package com.example.android.treasureHunt
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 
 /*
  * This class contains the state of the game.  The two important pieces of state are the index
@@ -38,16 +38,16 @@ class GeofenceViewModel(state: SavedStateHandle) : ViewModel() {
     val geofenceIndex: LiveData<Int>
         get() = _geofenceIndex
 
-    val geofenceHintResourceId = Transformations.map(geofenceIndex) {
+    val geofenceHintResourceId = geofenceIndex.map {
         val index = geofenceIndex?.value ?: -1
         when {
-            index < 0 -> R.string.not_started_hint
+            index < 0 -> ""
             index < GeofencingConstants.NUM_LANDMARKS -> GeofencingConstants.LANDMARK_DATA[geofenceIndex.value!!].hint
-            else -> R.string.geofence_over
+            else -> "You have found the treasure! Congratulations!"
         }
     }
 
-    val geofenceImageResourceId = Transformations.map(geofenceIndex) {
+    val geofenceImageResourceId = geofenceIndex.map {
         val index = geofenceIndex.value ?: -1
         when {
             index < GeofencingConstants.NUM_LANDMARKS -> R.drawable.android_map

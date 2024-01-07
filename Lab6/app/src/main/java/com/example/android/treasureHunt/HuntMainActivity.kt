@@ -80,7 +80,9 @@ class HuntMainActivity : AppCompatActivity() {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         geofencingClient = LocationServices.getGeofencingClient(this)
+        jsonData(applicationContext)
 
+        Log.d("test-start", "oncreate")
         // Create channel for notifications
         createChannel(this )
     }
@@ -335,7 +337,7 @@ class HuntMainActivity : AppCompatActivity() {
                         Toast.makeText(this@HuntMainActivity, R.string.geofences_not_added,
                             Toast.LENGTH_SHORT).show()
                         if ((it.message != null)) {
-                            Log.w(TAG, it.message)
+                            Log.w(TAG, it.message!!)
                         }
                     }
                 }
