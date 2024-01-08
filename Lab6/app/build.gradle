@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
-
-apply plugin: 'kotlin-android'
-
-apply plugin: 'kotlin-android-extensions'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+}
 
 android {
     compileSdk 33
@@ -38,7 +38,7 @@ android {
     }
 
     dataBinding {
-        enabled true
+        enabled = true
     }
     namespace 'com.example.android.treasureHunt'
 }

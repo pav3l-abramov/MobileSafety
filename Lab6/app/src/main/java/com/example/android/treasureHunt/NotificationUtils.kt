@@ -16,6 +16,7 @@
 
 package com.example.android.treasureHunt
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -57,6 +58,7 @@ fun createChannel(context: Context) {
  * entered notification.  It sends a custom notification based on the name string associated
  * with the LANDMARK_DATA from GeofencingConstatns in the GeofenceUtils file.
  */
+@SuppressLint("StringFormatMatches")
 fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundIndex: Int) {
     val contentIntent = Intent(context, HuntMainActivity::class.java)
     contentIntent.putExtra(GeofencingConstants.EXTRA_GEOFENCE_INDEX, foundIndex)
@@ -91,5 +93,3 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
 
 private const val NOTIFICATION_ID = 33
 private const val CHANNEL_ID = "GeofenceChannel"
-
-

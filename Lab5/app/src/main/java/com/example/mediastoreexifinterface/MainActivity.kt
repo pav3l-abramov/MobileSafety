@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
         val launcher = rememberLauncherForActivityResult(contract =ActivityResultContracts.GetContent()) { uri: Uri? ->imageUri = uri
             lifecycleScope.launch(Dispatchers.Main) {
                 val result = async(Dispatchers.IO) {
-                    val filePath= uri?.let { getExifInterfaceAbsolutePath(context, it) }
+                    val filePath= uri?.let { getRealPathFromURI(context, it) }
                     Log.d("filePath","$filePath")
                     val inputStream = uri?.let { contentResolver.openInputStream(it) }
                     val metadata = ImageMetadataReader.readMetadata(inputStream)
@@ -239,8 +239,8 @@ class MainActivity : ComponentActivity() {
     var device = img.device
     var model = img.model
     val dateTimeText = remember { mutableStateOf(dateTime?.let { TextFieldValue(it) }) }
-    val latitudeText = remember { mutableStateOf(latitude?.let { TextFieldValue(it) }) }
-    val longitudeText = remember { mutableStateOf(longitude?.let { TextFieldValue(it) }) }
+    val latitudeText = remember { mutableStateOf(latitude.let { TextFieldValue(it) }) }
+    val longitudeText = remember { mutableStateOf(longitude.let { TextFieldValue(it) }) }
     val deviceText = remember { mutableStateOf(device?.let { TextFieldValue(it) }) }
     val modelText = remember { mutableStateOf(model?.let { TextFieldValue(it) }) }
         val fileRealPath = getRealPathFromURI(context, img.uri) ?: ""

@@ -229,14 +229,14 @@ class HuntMainActivity : AppCompatActivity() {
     private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
         val foregroundLocationApproved = (
                 PackageManager.PERMISSION_GRANTED ==
-                ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION))
+                        ActivityCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION))
         val backgroundPermissionApproved =
             if (runningQOrLater) {
                 PackageManager.PERMISSION_GRANTED ==
-                ActivityCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                )
+                        ActivityCompat.checkSelfPermission(
+                            this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                        )
             } else {
                 true
             }

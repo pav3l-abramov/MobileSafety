@@ -11,7 +11,7 @@ import java.io.IOException
 
 private const val DB_NAME = "item_database_lab4"
 private val PASSPHRASE = dbKey
-    /*
+
 @Database(entities = [Item::class], version = 4, exportSchema = false)
 abstract class InventoryDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
@@ -57,23 +57,23 @@ abstract class InventoryDatabase : RoomDatabase() {
 }
 
 
-     */
 
 
-@Database(entities = [Item::class], version = 2, exportSchema = false)
-abstract class InventoryDatabase : RoomDatabase() {
-    abstract fun itemDao(): ItemDao
-    companion object {
-        @Volatile
-        private var Instance: InventoryDatabase? = null
-        fun getDatabase(context: Context): InventoryDatabase {
-            return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, InventoryDatabase::class.java, "item_database_lab4")
-                    .fallbackToDestructiveMigration().build().also { Instance = it }
-            }
 
-        }
-    }
+//@Database(entities = [Item::class], version = 2, exportSchema = false)
+//abstract class InventoryDatabase : RoomDatabase() {
+//    abstract fun itemDao(): ItemDao
+//    companion object {
+//        @Volatile
+//        private var Instance: InventoryDatabase? = null
+//        fun getDatabase(context: Context): InventoryDatabase {
+//            return Instance ?: synchronized(this) {
+//                Room.databaseBuilder(context, InventoryDatabase::class.java, "item_database_lab4")
+//                    .fallbackToDestructiveMigration().build().also { Instance = it }
+//            }
+//
+//        }
+//    }
 
-}
+
 
