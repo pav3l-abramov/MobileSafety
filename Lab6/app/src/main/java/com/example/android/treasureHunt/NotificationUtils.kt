@@ -66,7 +66,7 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
         context,
         NOTIFICATION_ID,
         contentIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     )
     val mapImage = BitmapFactory.decodeResource(
         context.resources,
