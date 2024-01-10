@@ -12,7 +12,7 @@ import java.io.IOException
 private const val DB_NAME = "item_database_lab4"
 private val PASSPHRASE = dbKey
 
-@Database(entities = [Item::class], version = 4, exportSchema = false)
+@Database(entities = [Item::class], version = 5, exportSchema = false)
 abstract class InventoryDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
 
@@ -60,9 +60,10 @@ abstract class InventoryDatabase : RoomDatabase() {
 
 
 
-//@Database(entities = [Item::class], version = 2, exportSchema = false)
+//@Database(entities = [Item::class], version = 5, exportSchema = false)
 //abstract class InventoryDatabase : RoomDatabase() {
 //    abstract fun itemDao(): ItemDao
+//
 //    companion object {
 //        @Volatile
 //        private var Instance: InventoryDatabase? = null
@@ -74,6 +75,6 @@ abstract class InventoryDatabase : RoomDatabase() {
 //
 //        }
 //    }
-
+//}
 
 
